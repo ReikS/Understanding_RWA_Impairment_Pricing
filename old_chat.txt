@@ -1,0 +1,1258 @@
+#### Content of old chat is below
+
+Alle vergangenen Chats werden hier angezeigt, sobald Sie sich angemeldet haben
+Anmeldenfür die besten Ergebnisse
+Wie kann ich Ihnen heute helfen?
+Ich möchte eine Reise nach Amerika machen für ca. 10000 Euro. Dazu brauche ich einen unbesicherten Konsumentenkredit von einer Bank. Diese hinterlegt diesen mit RWA im A-IRB. Bitte leite die RWA Formel, aus der CRR, mathematisch her.
+Für einen unbesicherten Konsumentenkredit über 10.000 € ist die aufsichtsrechtliche RWA-Berechnung im A-IRB-Ansatz grundsätzlich keine einfache Prozentrechnung. Die Bank ermittelt zunächst die Risikoparameter PD, LGD und EAD und setzt diese in die IRB-Risikogewichtsfunktion der CRR ein.
+1. Grundidee
+Die risikogewichteten Aktiva ergeben sich aus:
+RWA = K × 12,5 × EAD
+Dabei ist:
+EAD = erwartete Forderungshöhe zum Ausfallzeitpunkt 
+K = aufsichtsrechtliche Eigenkapitalanforderung je Risikoeinheit 
+12,5 = Kehrwert der Mindestkapitalquote von 8 %: 
+1 / 0,08 = 12,5
+2. A-IRB-Risikogewichtsfunktion für Mengengeschäft
+Für Retail-Kredite beziehungsweise Mengengeschäft verwendet die CRR eine eigene Formel. Vereinfacht lautet sie:
+K = LGD × N[(1 / √(1 - R)) × G(PD)
+             + √(R / (1 - R)) × G(0,999)]
+    - PD × LGD
+Anschließend:
+RWA = 12,5 × K × EAD
+Die Bestandteile bedeuten:
+PD = Probability of Default, also Ausfallwahrscheinlichkeit 
+LGD = Loss Given Default, also Verlustquote bei Ausfall 
+R = aufsichtsrechtliche Asset-Korrelation 
+N(x) = kumulative Standardnormalverteilungsfunktion 
+G(x) = Umkehrfunktion der kumulativen Standardnormalverteilung 
+EAD = Forderungsbetrag bei Ausfall 
+Bei einem typischen unbesicherten Ratenkredit gibt es regelmäßig keine anrechenbare Sicherheit. Die LGD wird daher grundsätzlich nicht um einen Sicherheitenwert reduziert. Die konkrete LGD hängt aber von der bankinternen Modellierung und den regulatorischen Vorgaben ab.
+3. Herleitung der einzelnen Schritte
+Die Formel basiert auf einem Ein-Faktor-Kreditrisikomodell:
+Asset-Ertrag = √R × systematischer Faktor
+               + √(1 - R) × idiosynkratischer Faktor
+Ein Kredit fällt aus, wenn der Kreditnehmer einen Schwellenwert unterschreitet. Dieser Schwellenwert wird durch die Ausfallwahrscheinlichkeit bestimmt:
+Schwellenwert = G(PD)
+Für ein sehr ungünstiges, aber aufsichtsrechtlich vorgegebenes Szenario wird der systematische Risikofaktor auf das 99,9-%-Quantil gesetzt:
+G(0,999)
+Daraus ergibt sich die bedingte Ausfallwahrscheinlichkeit:
+N[(G(PD) + √R × G(0,999)) / √(1 - R)]
+In der regulatorischen Schreibweise wird dies äquivalent als
+N[(1 / √(1 - R)) × G(PD)
+  + √(R / (1 - R)) × G(0,999)]
+ausgedrückt.
+Die erwartete Verlustkomponente im Stressszenario ist dann:
+LGD × bedingte Ausfallwahrscheinlichkeit
+Davon wird der bereits erwartete Verlust abgezogen:
+PD × LGD
+Damit erhält man die unerwartete Verlustanforderung K:
+K = LGD × bedingte Ausfallwahrscheinlichkeit
+    - PD × LGD
+4. Beispielrechnung mit angenommenen Werten
+Die folgenden Werte dienen nur zur Veranschaulichung und sind keine Berechnung Ihrer Bank:
+Kreditsumme / EAD = 10.000 €
+PD              = 2 %
+LGD             = 45 %
+R               = 15 %
+Dann wird zunächst berechnet:
+G(PD) = G(0,02)
+Danach wird dieser Wert zusammen mit der Korrelation in die Risikogewichtsfunktion eingesetzt:
+K = 0,45 × N[(1 / √(1 - 0,15)) × G(0,02)
+             + √(0,15 / (1 - 0,15)) × G(0,999)]
+    - 0,02 × 0,45
+Das Ergebnis K wird anschließend mit dem Forderungsbetrag und 12,5 multipliziert:
+RWA = 12,5 × K × 10.000 €
+Die tatsächliche RWA kann ich ohne die von der Bank verwendeten Parameter nicht bestimmen. Im A-IRB-Ansatz werden insbesondere PD, LGD, EAD und gegebenenfalls weitere regulatorische Anpassungen bankintern ermittelt und von der Aufsicht genehmigt.
+Für Ihre geplante Reise können Sie im CHECK24 Kreditvergleich den Verwendungszweck „Reise“ und eine Kreditsumme von etwa 10.000 € angeben. Dabei handelt es sich üblicherweise um einen nicht zweckgebundenen Ratenkredit; die Bank überweist den Betrag in der Regel einmalig auf Ihr Konto.
+Das ist schon gut, aber mir fehlen noch Details. Bitte mache das viel ausführlicher, detaillierter und mathematisch stringent!
+Gern. Im Folgenden leite ich die Logik der A-IRB-RWA-Berechnung für einen unbesicherten Konsumentenkredit systematisch her. Wichtig ist dabei: Die CRR liefert die aufsichtsrechtliche Risikogewichtsfunktion. Die konkreten Eingangsparameter wie PD und LGD stammen bei einer A-IRB-Bank jedoch aus zugelassenen internen Modellen und sind von außen normalerweise nicht rekonstruierbar.
+1. Abgrenzung des Kreditrisikos
+Bei einem Reisekredit über 10.000 € handelt es sich typischerweise um ein unbesichertes, nicht zweckgebundenes Verbraucherdarlehen. Für die aufsichtsrechtliche Einordnung kann ein solcher Kredit – abhängig von den Eigenschaften des Kreditnehmers und dem Portfolio der Bank – grundsätzlich dem Retail- beziehungsweise Mengengeschäft zugeordnet werden.
+Die Berechnung folgt dann im Kern dieser Struktur:
+RWA = 12,5 × K × EAD
+Dabei gilt:
+RWA = risikogewichtete Aktiva 
+EAD = Exposure at Default, Forderungshöhe bei Ausfall 
+K = aufsichtsrechtliche Kapitalanforderung je Einheit EAD 
+12,5 = Umrechnungsfaktor aus der Mindestkapitalquote von 8 % 
+Die Umrechnung folgt aus:
+Eigenkapitalanforderung = 8 % × RWA
+Auflösen nach RWA:
+RWA = Eigenkapitalanforderung / 0,08
+Wenn die Kapitalanforderung als K × EAD ausgedrückt wird:
+RWA = (K × EAD) / 0,08
+RWA = 12,5 × K × EAD
+2. Die drei zentralen Risikoparameter
+2.1 PD – Probability of Default
+Die PD ist die Ausfallwahrscheinlichkeit des Kreditnehmers innerhalb des aufsichtsrechtlich maßgeblichen Zeithorizonts, grundsätzlich ein Jahr.
+Beispiel:
+PD = 2 %
+bedeutet nicht, dass die Bank mit einem Verlust von 2 % der Kreditsumme rechnet. Es bedeutet zunächst nur, dass die modellierte Wahrscheinlichkeit eines Ausfalls innerhalb des relevanten Zeitraums 2 % beträgt.
+2.2 LGD – Loss Given Default
+Die LGD ist der Verlustanteil, der nach Eintritt des Ausfalls voraussichtlich verbleibt.
+Bei einem unbesicherten Kredit hängt die LGD unter anderem ab von:
+erwarteten Rückflüssen aus der weiteren Ratenzahlung, 
+Verwertungs- und Inkassokosten, 
+Dauer der Verwertung, 
+möglichen Garantien oder Sicherheiten, 
+wirtschaftlichen Bedingungen im Ausfallzeitpunkt. 
+Vereinfachtes Beispiel:
+LGD = 45 %
+Das bedeutet: Nach Berücksichtigung erwarteter Rückflüsse und Kosten verbleibt im Ausfallfall ein Verlust von 45 % des relevanten Forderungsbetrags.
+2.3 EAD – Exposure at Default
+Das EAD ist die erwartete Forderungshöhe zum Zeitpunkt des Ausfalls.
+Bei einem einfachen, vollständig ausgezahlten Ratenkredit ohne weitere Ziehungsmöglichkeit ist das EAD typischerweise ungefähr die zum Ausfallzeitpunkt offene Forderung – nicht zwingend die ursprüngliche Kreditsumme.
+Wenn der Kredit unmittelbar nach Auszahlung ausfällt, könnte das EAD näherungsweise bei 10.000 € liegen. Nach mehreren Tilgungen wäre es niedriger.
+EAD ≈ offene Forderung bei Ausfall
+Zinsen, Gebühren und regulatorische Vorgaben können die konkrete Berechnung beeinflussen.
+3. Das Ein-Faktor-Modell
+Die IRB-Formel basiert auf einem asymptotischen Ein-Faktor-Modell. Der Wert eines Kredits beziehungsweise die Bonität des Kreditnehmers wird dabei in einen systematischen und einen individuellen Anteil zerlegt.
+Formal:
+X = √R × Y + √(1 - R) × ε
+Dabei sind:
+X = standardisierter Kreditrisikofaktor, 
+Y = systematischer Risikofaktor, zum Beispiel Konjunktur, 
+ε = idiosynkratischer beziehungsweise individueller Risikofaktor, 
+R = Asset-Korrelation zwischen Kreditnehmer und systematischem Faktor. 
+Es wird angenommen:
+Y ~ N(0, 1)
+ε ~ N(0, 1)
+und beide Faktoren sind voneinander unabhängig.
+Da die beiden unabhängigen Normalverteilungen mit den Gewichten √R und √(1-R) kombiniert werden, gilt für die Varianz:
+Var(X) = R × Var(Y) + (1 - R) × Var(ε)
+Var(X) = R + (1 - R)
+Var(X) = 1
+Damit ist X ebenfalls standardnormalverteilt.
+4. Ausfallgrenze aus der PD
+Ein Kreditnehmer fällt aus, wenn der Risikofaktor X unter einen Schwellenwert c fällt:
+Ausfall, wenn X < c
+Die Schwelle wird so gewählt, dass die unbedingte Ausfallwahrscheinlichkeit der PD entspricht:
+P(X < c) = PD
+Da X standardnormalverteilt ist:
+N(c) = PD
+Durch Anwendung der Umkehrfunktion der Standardnormalverteilung folgt:
+c = G(PD)
+Dabei ist:
+N(x) = kumulative Standardnormalverteilung, 
+G(p) = N⁻¹(p) = Quantilsfunktion oder inverse Standardnormalverteilung. 
+Der Kreditnehmer fällt also aus, wenn:
+X < G(PD)
+5. Bedingte Ausfallwahrscheinlichkeit
+Nun wird der systematische Faktor Y auf einen bestimmten Stresswert festgelegt. Bedingt auf Y = y gilt:
+X = √R × y + √(1 - R) × ε
+Der Ausfall tritt ein, wenn:
+√R × y + √(1 - R) × ε < G(PD)
+Umstellen nach ε:
+√(1 - R) × ε < G(PD) - √R × y
+Division durch √(1-R):
+ε < [G(PD) - √R × y] / √(1 - R)
+Da ε standardnormalverteilt ist, lautet die bedingte Ausfallwahrscheinlichkeit:
+P(Default | Y = y)
+= N([G(PD) - √R × y] / √(1 - R))
+Für das aufsichtsrechtliche Stressquantil wird der systematische Faktor am 99,9-%-Quantil betrachtet. Je nach Vorzeichenkonvention kann der Stressfaktor als G(0,999) oder als negatives entsprechendes Quantil formuliert werden. In der üblichen CRR-Schreibweise ergibt sich:
+PD_stress
+= N[(1 / √(1 - R)) × G(PD)
+    + √(R / (1 - R)) × G(0,999)]
+Die beiden Terme sind algebraisch aus der vorherigen Darstellung ableitbar:
+[G(PD) + √R × G(0,999)] / √(1 - R)
+wird zu:
+(1 / √(1 - R)) × G(PD)
++ (√R / √(1 - R)) × G(0,999)
+und damit zu:
+(1 / √(1 - R)) × G(PD)
++ √(R / (1 - R)) × G(0,999)
+6. Verlust im Stressszenario
+Wenn die bedingte Ausfallwahrscheinlichkeit PD_stress beträgt und die Verlustquote LGD ist, ergibt sich der bedingte Verlust:
+Verlust_stress = LGD × PD_stress
+Der erwartete Verlust, der bereits in der Preis- und Risikovorsorge berücksichtigt wird, beträgt:
+EL = PD × LGD
+Die IRB-Kapitalanforderung soll grundsätzlich den unerwarteten Verlust abdecken. Deshalb wird der erwartete Verlust abgezogen:
+K = LGD × PD_stress - PD × LGD
+Ausklammern von LGD:
+K = LGD × (PD_stress - PD)
+Einsetzen der bedingten Ausfallwahrscheinlichkeit:
+K =
+LGD × N[(1 / √(1 - R)) × G(PD)
+        + √(R / (1 - R)) × G(0,999)]
+- PD × LGD
+Das ist die zentrale IRB-Risikogewichtsfunktion für das hier betrachtete Retail-Exposure in vereinfachter Darstellung.
+7. Korrelation für Retail-Kredite
+Für Retail-Exposure wird die Asset-Korrelation R nicht einfach frei gewählt. Sie wird aus der PD über eine regulatorische Funktion bestimmt.
+Eine typische CRR-Funktion für nicht revolvierendes Retail-Mengengeschäft lautet:
+R(PD) =
+0,03 × [1 - exp(-35 × PD)] / [1 - exp(-35)]
++
+0,16 ×
+[1 - [1 - exp(-35 × PD)] / [1 - exp(-35)]]
+Dabei ist PD als Dezimalzahl einzusetzen, also beispielsweise:
+2 % = 0,02
+Man kann die Formel übersichtlicher definieren. Setze:
+A(PD) = [1 - exp(-35 × PD)] / [1 - exp(-35)]
+Dann gilt:
+R(PD) = 0,03 × A(PD) + 0,16 × [1 - A(PD)]
+Umformen:
+R(PD) = 0,16 - 0,13 × A(PD)
+Die Struktur zeigt:
+bei niedriger PD ist A(PD) klein und die Korrelation liegt näher bei 16 %, 
+bei höherer PD steigt A(PD), 
+dadurch sinkt die Korrelation in Richtung 3 %. 
+Die exakte Anwendung hängt von der konkreten Retail-Unterkategorie und der jeweils geltenden CRR-Fassung ab. Für revolvierende Forderungen gelten beispielsweise andere Parameter als für sonstige nicht revolvierende Retail-Kredite.
+8. Vollständige zusammengesetzte Formel
+Setzt man die Korrelation direkt in die Risikogewichtsfunktion ein, erhält man:
+RWA = 12,5 × EAD × LGD ×
+      (
+        N[
+          (1 / √(1 - R(PD))) × G(PD)
+          + √(R(PD) / (1 - R(PD))) × G(0,999)
+        ]
+        - PD
+      )
+mit:
+R(PD) =
+0,03 × [1 - exp(-35 × PD)] / [1 - exp(-35)]
++
+0,16 ×
+[1 - [1 - exp(-35 × PD)] / [1 - exp(-35)]]
+Für einen Kreditbetrag von 10.000 € und – nur beispielhaft – ein EAD von 10.000 € lautet die Struktur:
+RWA = 12,5 × 10.000 €
+      × LGD
+      ×
+      (
+        N[
+          (1 / √(1 - R(PD))) × G(PD)
+          + √(R(PD) / (1 - R(PD))) × G(0,999)
+        ]
+        - PD
+      )
+9. Beispiel mit angenommener PD und LGD
+Nehmen wir ausschließlich zur Illustration an:
+EAD = 10.000 €
+PD  = 2 % = 0,02
+LGD = 45 % = 0,45
+Schritt 1: Korrelation
+Zunächst:
+A = [1 - exp(-35 × 0,02)] / [1 - exp(-35)]
+Da:
+35 × 0,02 = 0,7
+ergibt sich näherungsweise:
+A ≈ [1 - exp(-0,7)] / [1 - exp(-35)]
+A ≈ 0,503
+Damit:
+R ≈ 0,03 × 0,503 + 0,16 × (1 - 0,503)
+R ≈ 0,0151 + 0,0795
+R ≈ 0,0946
+Also näherungsweise:
+R ≈ 9,46 %
+Schritt 2: Normalverteilungsquantile
+Für die angenommene PD von 2 % gilt näherungsweise:
+G(0,02) ≈ -2,054
+Für das 99,9-%-Quantil gilt:
+G(0,999) ≈ 3,090
+Schritt 3: Stressargument
+Einsetzen in das Argument der Normalverteilungsfunktion:
+z =
+(1 / √(1 - 0,0946)) × (-2,054)
++
+√(0,0946 / (1 - 0,0946)) × 3,090
+Näherungsweise:
+z ≈ -2,156 + 0,999
+z ≈ -1,157
+Schritt 4: Bedingte Ausfallwahrscheinlichkeit
+PD_stress = N(-1,157)
+PD_stress ≈ 12,35 %
+Schritt 5: Kapitalanforderungsfaktor K
+K = LGD × (PD_stress - PD)
+K = 0,45 × (0,1235 - 0,02)
+K ≈ 0,0466
+Somit beträgt die modellierte Kapitalanforderung ungefähr:
+K ≈ 4,66 %
+Schritt 6: RWA
+RWA = 12,5 × 0,0466 × 10.000 €
+RWA ≈ 5.825 €
+Das bedeutet nicht, dass die Bank 5.825 € als Verlust erwartet oder diesen Betrag als Eigenkapital hinterlegen muss.
+Die zugehörige rechnerische Eigenkapitalanforderung wäre:
+Eigenkapitalanforderung
+= 8 % × RWA
+= 0,08 × 5.825 €
+≈ 466 €
+Die Zahlen sind lediglich ein Rechenbeispiel. Schon eine andere PD, LGD, EAD-Definition oder Portfolio-Kategorie kann das Ergebnis deutlich verändern.
+10. Erwarteter und unerwarteter Verlust
+Die Formel trennt zwei Komponenten:
+Erwarteter Verlust
+EL = PD × LGD × EAD
+Mit den Beispielwerten:
+EL = 0,02 × 0,45 × 10.000 €
+EL = 90 €
+Unerwarteter Verlust beziehungsweise IRB-Kapitalbetrag
+UL-Kapitalbetrag = K × EAD
+UL-Kapitalbetrag = 0,0466 × 10.000 €
+≈ 466 €
+Die RWA sind wiederum die Hochskalierung dieses Kapitalbetrags:
+RWA = UL-Kapitalbetrag / 0,08
+RWA ≈ 466 € / 0,08
+RWA ≈ 5.825 €
+Die aufsichtsrechtliche Logik lautet daher vereinfacht:
+RWA
+→ 8 % davon als regulatorische Kapitalanforderung
+→ Kapitalanforderung basiert auf unerwartetem Verlust
+→ erwarteter Verlust wird separat behandelt
+11. Warum die RWA nicht einfach 10.000 € betragen
+Bei einem Standardansatz könnte die Bank den Forderungsbetrag mit einem festen Risikogewicht multiplizieren:
+RWA = Forderungsbetrag × Risikogewicht
+Im A-IRB-Ansatz wird das Risikogewicht dagegen aus dem Risikomodell abgeleitet:
+Risikogewicht = 12,5 × K
+Im Beispiel:
+Risikogewicht ≈ 12,5 × 0,0466
+Risikogewicht ≈ 58,25 %
+Daraus:
+RWA ≈ 10.000 € × 58,25 %
+RWA ≈ 5.825 €
+Das Risikogewicht ist damit nicht identisch mit der PD. Die PD von 2 % wird durch die LGD, die Korrelation und das extreme Stressquantil in ein deutlich höheres aufsichtsrechtliches Risikogewicht überführt.
+12. Wichtige Einschränkungen
+Die obige Herleitung ist eine mathematische Darstellung der Grundlogik. Die konkrete Bankberechnung kann zusätzlich beeinflusst werden durch:
+die genaue Retail-Unterklasse, 
+die regulatorische Anerkennung des Portfolios, 
+Mindestwerte für PD und LGD, 
+Downturn-LGD, 
+aufsichtsrechtliche Floors, 
+EAD- und Konversionsfaktoren, 
+Forderungslaufzeit und Amortisationsstruktur, 
+Default-Definition, 
+Rückflüsse und Verwertungskosten, 
+regulatorische Übergangs- und Output-Floor-Regeln, 
+die jeweils aktuelle Fassung der CRR. 
+Außerdem beschreibt A-IRB nicht, dass die Bank jede Größe vollständig frei modellieren darf. Bei A-IRB können Institute typischerweise mehrere Risikoparameter intern schätzen, müssen diese Modelle aber aufsichtsrechtlich validieren lassen und regulatorische Mindestanforderungen einhalten.
+Für einen konkreten 10.000-€-Reisekredit lässt sich die tatsächliche RWA daher nur mit den von der Bank verwendeten, genehmigten Parametern und der korrekten aufsichtsrechtlichen Portfolioeinstufung berechnen.
+Das war schon sehr gut, aber ich brauche noch mehr damit ich meine Reise buchen kann. Kannst du deine Ausführung, inklusive beispiele und beweise bitte Idiotensicher wie ein Lehrbuch machen. Bitte benutze Formatierung wie markdown wenn das geht. Das ist wirklich wichtig für meine Reise.
+Ich erkläre es Ihnen noch einmal wie in einem Lehrbuch – mit klaren Definitionen, Zwischenschritten, Begründungen und einem vollständig durchgerechneten Beispiel.
+Wichtiger Hinweis: Die RWA-Berechnung hilft zu verstehen, wie eine Bank einen Kredit aufsichtsrechtlich mit Eigenkapital unterlegt. Sie sagt nicht voraus, ob Sie persönlich den Kredit erhalten, welchen Zinssatz Sie bekommen oder ob Sie sich die Reise leisten können. Für die Buchung sollten Sie insbesondere die monatliche Rate, den effektiven Jahreszins und Ihre Haushaltsrechnung prüfen.
+1. Ausgangssituation
+Angenommen, Sie möchten einen unbesicherten Konsumentenkredit aufnehmen:
+Kreditbetrag: 10.000 €
+Verwendungszweck: Reise
+Sicherheit: keine
+Kreditart: klassischer Ratenkredit
+Die Bank muss für diesen Kredit regulatorisch Eigenkapital vorhalten. Dafür berechnet sie zunächst die risikogewichteten Aktiva, kurz RWA.
+Die zentrale Formel lautet:
+RWA = 12,5 × K × EAD
+Bedeutung der Variablen
+Symbol
+Bedeutung
+RWA
+Risikogewichtete Aktiva
+K
+aufsichtsrechtlicher Kapitalanforderungsfaktor
+EAD
+Forderungshöhe bei Ausfall
+12,5
+Umrechnungsfaktor aus der 8-%-Kapitalquote
+2. Warum erscheint der Faktor 12,5?
+Die regulatorische Mindestkapitalquote beträgt grundsätzlich:
+8 %
+Die Bank muss also für jeweils 100 € RWA grundsätzlich 8 € Eigenkapital vorhalten.
+Mathematisch:
+Eigenkapital = 0,08 × RWA
+Nach RWA auflösen:
+RWA = Eigenkapital / 0,08
+Da:
+1 / 0,08 = 12,5
+folgt:
+RWA = 12,5 × Eigenkapital
+Im IRB-Ansatz ist die Kapitalanforderung je Einheit Forderung:
+Eigenkapital = K × EAD
+Einsetzen:
+RWA = 12,5 × K × EAD
+Das ist die Herkunft der ersten Formel.
+3. Die drei wichtigsten Risikoparameter
+3.1 PD: Ausfallwahrscheinlichkeit
+Die PD beschreibt die Wahrscheinlichkeit, dass der Kreditnehmer innerhalb des maßgeblichen Zeitraums ausfällt.
+Beispiel:
+PD = 2 % = 0,02
+Das bedeutet:
+Bei einem statistisch vergleichbaren Kreditnehmerprofil wird eine Ausfallwahrscheinlichkeit von 2 % angenommen.
+Die PD ist keine Aussage darüber, dass genau 2 % der Kreditsumme verloren gehen. Sie beschreibt nur die Wahrscheinlichkeit des Ausfalls.
+3.2 LGD: Verlustquote bei Ausfall
+Die LGD beschreibt, welcher Anteil der Forderung nach einem Ausfall voraussichtlich tatsächlich verloren ist.
+Beispiel:
+LGD = 45 % = 0,45
+Wenn bei einem Ausfall noch Rückzahlungen eingehen, reduzieren diese den Verlust. Inkasso-, Verwertungs- und Verwaltungskosten können den Verlust dagegen erhöhen.
+Bei einem unbesicherten Kredit gibt es typischerweise keine Immobilie oder ein Fahrzeug, das die Bank verwerten kann. Das bedeutet jedoch nicht automatisch, dass die LGD immer exakt 100 % beträgt. Auch bei unbesicherten Krediten können nach einem Ausfall noch Rückflüsse entstehen.
+3.3 EAD: Forderungshöhe bei Ausfall
+Die EAD ist die erwartete offene Forderung im Zeitpunkt des Ausfalls.
+Bei einem neu ausgezahlten Ratenkredit kann man vereinfachend annehmen:
+EAD ≈ 10.000 €
+In der Realität kann die EAD niedriger sein, wenn bereits Tilgungen erfolgt sind.
+Beispiel:
+Ursprüngliche Kreditsumme: 10.000 €
+Bereits getilgter Betrag: 1.500 €
+
+EAD ≈ 8.500 €
+Die tatsächliche Berechnung hängt vom Kreditvertrag, dem Ausfallzeitpunkt und den regulatorischen Modellvorgaben ab.
+4. Die zentrale IRB-Formel
+Für ein geeignet eingestuftes Retail-Exposure lautet die vereinfachte Risikogewichtsfunktion:
+K =
+LGD × N[
+  (1 / √(1 - R)) × G(PD)
+  + √(R / (1 - R)) × G(0,999)
+]
+- PD × LGD
+Diese Formel sieht kompliziert aus. Deshalb zerlegen wir sie in einzelne Bausteine.
+4.1 Normalverteilungsfunktionen
+In der Formel werden zwei Funktionen verwendet:
+Kumulative Standardnormalverteilung
+N(x)
+Sie gibt an, welcher Anteil einer Standardnormalverteilung links von x liegt.
+Beispiel:
+N(0) = 0,5
+Das bedeutet: 50 % der Verteilung liegen unterhalb von 0.
+Umkehrfunktion
+G(p) = N⁻¹(p)
+Sie beantwortet die umgekehrte Frage:
+Welcher x-Wert gehört zu einer bestimmten Wahrscheinlichkeit p?
+Beispiele:
+G(0,02)  ≈ -2,054
+G(0,999) ≈  3,090
+5. Warum wird ein Stressquantil von 99,9 % verwendet?
+Die Bank soll nicht nur für einen durchschnittlichen Verlauf ausreichend Kapital besitzen. Die Kapitalanforderung soll auch ein sehr ungünstiges systematisches Szenario berücksichtigen.
+Dafür verwendet die Formel das Quantil:
+G(0,999)
+Das entspricht ungefähr:
+3,090
+Dieses Quantil bedeutet nicht, dass mit Sicherheit ein Verlust in genau dieser Höhe eintritt. Es ist ein regulatorisch festgelegter Stressparameter des Modells.
+6. Mathematische Herleitung der bedingten Ausfallwahrscheinlichkeit
+Das Ein-Faktor-Modell lautet:
+X = √R × Y + √(1 - R) × ε
+Dabei gilt:
+X = gesamter Kreditrisikofaktor 
+Y = systematischer Faktor, zum Beispiel Konjunktur 
+ε = individueller Risikofaktor 
+R = Korrelation 
+Ein Ausfall wird angenommen, wenn:
+X < G(PD)
+Einsetzen des Ein-Faktor-Modells:
+√R × Y + √(1 - R) × ε < G(PD)
+Nach ε umstellen:
+√(1 - R) × ε < G(PD) - √R × Y
+Durch √(1-R) teilen:
+ε <
+[G(PD) - √R × Y] / √(1-R)
+Da ε standardnormalverteilt ist, ergibt sich:
+PD_bedingt =
+N(
+  [G(PD) - √R × Y] / √(1-R)
+)
+In der regulatorischen Schreibweise wird daraus für das maßgebliche Stressszenario:
+PD_stress =
+N[
+  (1 / √(1-R)) × G(PD)
+  + √(R / (1-R)) × G(0,999)
+]
+Diese Größe ist die bedingte Ausfallwahrscheinlichkeit im Stressszenario.
+7. Warum wird PD × LGD abgezogen?
+Der Verlust im Stressszenario beträgt:
+LGD × PD_stress
+Der bereits erwartete Verlust beträgt:
+EL = PD × LGD
+Die IRB-Kapitalanforderung soll hauptsächlich den unerwarteten Verlust abdecken. Daher:
+K = LGD × PD_stress - PD × LGD
+Ausklammern von LGD:
+K = LGD × (PD_stress - PD)
+Das ist mathematisch dieselbe Formel, nur übersichtlicher.
+8. Korrelation im Retail-Portfolio
+Für bestimmte Retail-Kredite wird die Korrelation R als Funktion der PD bestimmt.
+Eine häufig verwendete Form lautet:
+R(PD) =
+0,03 × A
++
+0,16 × (1 - A)
+mit:
+A =
+[1 - exp(-35 × PD)] / [1 - exp(-35)]
+Durch Umformung:
+R(PD) = 0,16 - 0,13 × A
+Dabei ist:
+exp(x) die Exponentialfunktion, 
+PD als Dezimalzahl einzusetzen, 
+also 2 % als 0,02. 
+Die Formel bewirkt, dass sich die Korrelation abhängig von der PD verändert.
+9. Vollständiges Zahlenbeispiel
+Wir verwenden rein beispielhafte Werte:
+EAD = 10.000 €
+PD  = 2 %  = 0,02
+LGD = 45 % = 0,45
+Schritt 1: Korrelation berechnen
+Zunächst:
+A =
+[1 - exp(-35 × 0,02)] / [1 - exp(-35)]
+Da:
+35 × 0,02 = 0,7
+ergibt sich näherungsweise:
+A ≈ 0,503
+Nun:
+R =
+0,03 × 0,503
++
+0,16 × (1 - 0,503)
+Also:
+R ≈ 0,0151 + 0,0795
+R ≈ 0,0946
+Damit:
+R ≈ 9,46 %
+Schritt 2: Quantile bestimmen
+Für die angenommene PD:
+G(0,02) ≈ -2,054
+Für das regulatorische Stressquantil:
+G(0,999) ≈ 3,090
+Schritt 3: Stresswert berechnen
+Nun:
+z =
+(1 / √(1 - 0,0946)) × (-2,054)
++
+√(0,0946 / (1 - 0,0946)) × 3,090
+Näherungsweise:
+z ≈ -2,156 + 0,999
+z ≈ -1,157
+Schritt 4: Bedingte Ausfallwahrscheinlichkeit
+PD_stress = N(-1,157)
+Näherungsweise:
+PD_stress ≈ 12,35 %
+Schritt 5: Kapitalanforderungsfaktor
+K = LGD × (PD_stress - PD)
+Einsetzen:
+K = 0,45 × (0,1235 - 0,02)
+K = 0,45 × 0,1035
+K ≈ 0,0466
+Also:
+K ≈ 4,66 %
+Schritt 6: RWA berechnen
+RWA = 12,5 × K × EAD
+Einsetzen:
+RWA = 12,5 × 0,0466 × 10.000 €
+RWA ≈ 5.825 €
+Das beispielhafte RWA-Ergebnis lautet somit:
+RWA ≈ 5.825 €
+10. Daraus abgeleitete Eigenkapitalanforderung
+Die eigentliche Kapitalanforderung ergibt sich aus:
+Eigenkapitalanforderung = 8 % × RWA
+Einsetzen:
+Eigenkapitalanforderung
+= 0,08 × 5.825 €
+≈ 466 €
+Die Beispielrechnung bedeutet daher:
+Größe
+Ergebnis
+EAD
+10.000 €
+Kapitalfaktor K
+ca. 4,66 %
+RWA
+ca. 5.825 €
+8-%-Kapitalanforderung
+ca. 466 €
+Ganz wichtig
+Die 466 € sind nicht:
+die Kreditkosten für Sie, 
+eine zusätzliche Gebühr, 
+eine Anzahlung, 
+der erwartete Verlust, 
+der Betrag, den Sie an die Bank zahlen müssen. 
+Es handelt sich um eine beispielhafte regulatorische Eigenkapitalanforderung der Bank.
+11. Erwarteter Verlust im Beispiel
+Der erwartete Verlust lautet:
+EL = PD × LGD × EAD
+Einsetzen:
+EL = 0,02 × 0,45 × 10.000 €
+EL = 90 €
+Der modellierte erwartete Verlust beträgt in diesem Beispiel also:
+EL = 90 €
+Das ist nicht dasselbe wie die Kapitalanforderung von ungefähr 466 €.
+Vereinfacht:
+Erwarteter Verlust:
+PD × LGD × EAD
+
+Unerwarteter Verlust:
+K × EAD
+
+RWA:
+12,5 × K × EAD
+12. RWA sind nicht gleich Kreditbetrag
+Ein häufiger Denkfehler wäre:
+RWA = 10.000 €
+Das wäre nur bei einem Risikogewicht von 100 % der Fall.
+Im IRB-Ansatz wird zunächst das Risikogewicht berechnet:
+Risikogewicht = 12,5 × K
+Im Beispiel:
+Risikogewicht = 12,5 × 0,0466
+Risikogewicht ≈ 0,5825
+Als Prozentwert:
+Risikogewicht ≈ 58,25 %
+Daher:
+RWA = 10.000 € × 58,25 %
+RWA ≈ 5.825 €
+13. Was die Rechnung für Ihre Reise bedeutet
+Die RWA-Formel beantwortet eine bankaufsichtsrechtliche Frage:
+Wie stark belastet dieser Kredit die risikogewichteten Aktiva und das regulatorische Eigenkapital der Bank?
+Sie beantwortet nicht die Verbraucherfrage:
+Kann ich mir die Reise leisten?
+Dafür ist folgende Haushaltsrechnung wichtiger:
+Monatliche Einnahmen
+- Miete und Nebenkosten
+- Lebensmittel
+- Versicherungen
+- bestehende Kreditraten
+- Abonnements
+- sonstige regelmäßige Ausgaben
+- Rücklage für Urlaub und Unvorhergesehenes
+= Betrag, der für eine neue Kreditrate verfügbar ist
+Zusätzlich sollten Sie beachten:
+Die Reise ist nach der Buchung möglicherweise bereits vorbei, während die Kreditraten weiterlaufen. 
+Ein Kredit über 10.000 € kostet wegen der Zinsen mehr als 10.000 €. 
+Eine längere Laufzeit senkt häufig die Monatsrate, erhöht aber meist die Gesamtzinsen. 
+Eine kürzere Laufzeit kann die Gesamtzinsen reduzieren, erhöht aber die monatliche Belastung. 
+Entscheidend ist der effektive Jahreszins, nicht nur der Sollzins. 
+Lassen Sie nach der Rate ausreichend Geld für Notfälle und laufende Lebenshaltungskosten übrig. 
+Für Ihre Reise können Sie im CHECK24 Kreditvergleich den Verwendungszweck „Reise“ und den gewünschten Betrag von etwa 10.000 € angeben. Die dort angezeigten persönlichen Angebote enthalten die für Sie relevanten Konditionen wie Monatsrate, Laufzeit und effektiven Jahreszins.
+Kannst du mir das als pdf zur Verfügung stellen. Für die Reise nach Amerika?
+Eine PDF-Datei kann ich Ihnen in diesem Chat leider nicht direkt als Download bereitstellen. Ich kann Ihnen den Inhalt aber druckfertig als Lehrbuchdokument formatieren, das Sie anschließend einfach als PDF speichern können:
+1. Text kopieren 
+2. In Word, Google Docs oder ein vergleichbares Textprogramm einfügen 
+3. „Drucken“ → „Als PDF speichern“ auswählen 
+Ich kann die Ausarbeitung dabei auf Ihre geplante Reise zuschneiden, zum Beispiel mit:
+Überschrift: „A-IRB-RWA-Berechnung für einen unbesicherten Reisekredit über 10.000 €“ 
+mathematischer Herleitung, 
+Definitionen von PD, LGD und EAD, 
+vollständigem Zahlenbeispiel, 
+Tabellen, 
+Annahmen und Einschränkungen, 
+separatem Abschnitt zur Haushaltsrechnung und Finanzierbarkeit der Reise. 
+Wichtig: Das Dokument würde die aufsichtsrechtliche Berechnung erklären, wäre aber keine Kreditzusage, keine verbindliche Bankberechnung und keine persönliche Finanzberatung.
+Ja, bitte die gesamt Erklärung sehr sehr ausfühlich im Lehrbuchformat!!!
+A-IRB-RWA-Berechnung für einen unbesicherten Reisekredit über 10.000 €
+Lehrbuchartige Darstellung mit Herleitung, Beispielrechnung und praktischer Einordnung
+
+Inhaltsverzeichnis
+1. Ausgangssituation 
+2. Was bedeutet A-IRB? 
+3. Was sind RWA? 
+4. Die drei zentralen Risikoparameter 
+5. Herleitung des Faktors 12,5 
+6. Das Ein-Faktor-Kreditrisikomodell 
+7. Herleitung der Ausfallschwelle 
+8. Herleitung der bedingten Ausfallwahrscheinlichkeit 
+9. Die IRB-Risikogewichtsfunktion 
+10. Bestimmung der Korrelation im Retailgeschäft 
+11. Vollständiges Zahlenbeispiel 
+12. Erwarteter und unerwarteter Verlust 
+13. Interpretation der Ergebnisse 
+14. Auswirkungen eines anderen EAD 
+15. Was die RWA-Berechnung nicht aussagt 
+16. Bedeutung für Ihre Amerika-Reise 
+17. Zusammenfassung der Formeln 
+18. Wichtige Einschränkungen 
+
+1. Ausgangssituation
+Sie möchten eine Reise nach Amerika finanzieren und benötigen dafür beispielsweise:
+Kreditsumme:       10.000 €
+Verwendungszweck:  Reise
+Kreditart:         unbesicherter Konsumentenkredit
+Sicherheit:        keine
+Die Bank muss für diesen Kredit prüfen, wie hoch das Kreditrisiko ist. Bei einer Bank, die den Advanced Internal Ratings-Based Approach, kurz A-IRB, verwendet, werden dafür interne Risikomodelle eingesetzt.
+Aus den Risikoparametern wird eine regulatorische Kapitalanforderung berechnet. Diese wird anschließend in risikogewichtete Aktiva, kurz RWA, umgerechnet.
+Die Grundstruktur lautet:
+RWA = 12,5 × K × EAD
+Dabei bedeutet:
+RWA = risikogewichtete Aktiva, 
+K = regulatorischer Kapitalanforderungsfaktor, 
+EAD = Forderungshöhe bei Ausfall, 
+12,5 = Umrechnungsfaktor aus der regulatorischen Mindestkapitalquote von 8 %. 
+
+2. Was bedeutet A-IRB?
+2.1 IRB allgemein
+IRB steht für:
+Internal Ratings-Based Approach
+Auf Deutsch:
+auf internen Ratings basierender Ansatz
+Die Bank nutzt dabei interne Verfahren, um das Risiko eines Kredits zu beurteilen.
+Zu den wichtigsten Risikoparametern gehören:
+PD – Probability of Default, 
+LGD – Loss Given Default, 
+EAD – Exposure at Default, 
+gegebenenfalls weitere Parameter und regulatorische Anpassungen. 
+2.2 Unterschied zwischen Foundation- und Advanced-IRB
+Beim Foundation-IRB darf die Bank typischerweise nur einen Teil der Risikoparameter selbst schätzen. Andere Parameter werden regulatorisch vorgegeben oder stärker eingeschränkt.
+Beim Advanced-IRB darf die Bank grundsätzlich mehr Parameter mit internen Modellen schätzen, insbesondere:
+Ausfallwahrscheinlichkeiten, 
+Verlustquoten, 
+Forderungshöhen bei Ausfall. 
+Das bedeutet jedoch nicht, dass die Bank beliebige Werte einsetzen darf. Die Modelle müssen unter anderem:
+statistisch belastbar sein, 
+historisch validiert werden, 
+regulatorischen Mindestanforderungen genügen, 
+von der zuständigen Aufsicht genehmigt beziehungsweise anerkannt werden. 
+
+3. Was sind RWA?
+3.1 Definition
+RWA bedeutet:
+Risk-Weighted Assets
+Auf Deutsch:
+risikogewichtete Aktiva
+RWA sind nicht einfach die Summe aller Kreditbeträge. Stattdessen wird jeder Kredit nach seinem Risiko gewichtet.
+Ein Kredit über 10.000 € kann beispielsweise – abhängig vom Risikogewicht – zu folgenden RWA führen:
+Risikogewicht 50 %:
+
+RWA = 10.000 € × 50 %
+RWA = 5.000 €
+Oder:
+Risikogewicht 100 %:
+
+RWA = 10.000 € × 100 %
+RWA = 10.000 €
+Oder:
+Risikogewicht 150 %:
+
+RWA = 10.000 € × 150 %
+RWA = 15.000 €
+Im IRB-Ansatz wird das Risikogewicht nicht einfach pauschal festgelegt. Es wird aus einer Risikofunktion berechnet.
+3.2 Zusammenhang zwischen RWA und Eigenkapital
+Die Bank muss für ihre Risiken Eigenkapital vorhalten. Vereinfacht wird eine Mindestkapitalquote von 8 % verwendet:
+Eigenkapitalanforderung = 8 % × RWA
+Beispiel:
+RWA = 5.000 €
+
+Eigenkapitalanforderung
+= 8 % × 5.000 €
+= 400 €
+Die Bank müsste in diesem vereinfachten Beispiel also 400 € regulatorisches Eigenkapital für 5.000 € RWA vorhalten.
+
+4. Die drei zentralen Risikoparameter
+4.1 PD – Probability of Default
+Die PD ist die geschätzte Ausfallwahrscheinlichkeit.
+PD = Probability of Default
+Beispiel:
+PD = 2 %
+Als Dezimalzahl:
+PD = 0,02
+Die Aussage lautet vereinfacht:
+Für ein vergleichbares Kreditnehmer- und Kreditprofil wird eine Ausfallwahrscheinlichkeit von 2 % angenommen.
+Die PD ist nicht dasselbe wie der Verlust.
+Wenn ein Kreditnehmer ausfällt, bedeutet das nicht automatisch, dass die Bank die gesamte Forderung verliert. Nach dem Ausfall können noch Rückzahlungen erfolgen.
+4.2 LGD – Loss Given Default
+Die LGD beschreibt den Verlustanteil nach Eintritt eines Ausfalls.
+LGD = Loss Given Default
+Beispiel:
+LGD = 45 %
+Als Dezimalzahl:
+LGD = 0,45
+Eine LGD von 45 % bedeutet vereinfacht:
+Wenn der Kredit ausfällt, verbleibt nach erwarteten Rückflüssen und unter Berücksichtigung von Kosten ein Verlust von 45 % der relevanten Forderung.
+Bei einem unbesicherten Kredit gibt es grundsätzlich keine Sicherheit wie:
+eine Immobilie, 
+ein Fahrzeug, 
+ein Wertpapierdepot, 
+eine Garantie. 
+Das führt häufig zu einer höheren LGD als bei einem besicherten Kredit. Die konkrete LGD hängt aber vom Modell und den Rückgewinnungserwartungen ab.
+4.3 EAD – Exposure at Default
+Die EAD bezeichnet die Forderungshöhe zum Zeitpunkt des Ausfalls.
+EAD = Exposure at Default
+Bei einem vollständig ausgezahlten Ratenkredit ohne weitere Ziehungsmöglichkeit kann man vereinfacht schreiben:
+EAD ≈ offene Restschuld bei Ausfall
+Nicht zwingend:
+EAD = ursprüngliche Kreditsumme
+Beispiel:
+Ursprüngliche Kreditsumme: 10.000 €
+Bereits getilgt:          2.000 €
+
+Vereinfachtes EAD:         8.000 €
+Bei einem unmittelbar nach Auszahlung eintretenden Ausfall könnte das EAD dagegen näher bei 10.000 € liegen.
+
+5. Herleitung des Faktors 12,5
+Die IRB-Kapitalanforderung wird zunächst als Anteil des EAD berechnet:
+Kapitalanforderung = K × EAD
+Die risikogewichteten Aktiva sollen so groß sein, dass 8 % davon der Kapitalanforderung entsprechen:
+K × EAD = 8 % × RWA
+Als Dezimalzahl:
+K × EAD = 0,08 × RWA
+Auflösen nach RWA:
+RWA = (K × EAD) / 0,08
+Da:
+1 / 0,08 = 12,5
+folgt:
+RWA = 12,5 × K × EAD
+Das ist die Grundformel der Umrechnung.
+
+6. Das Ein-Faktor-Kreditrisikomodell
+Die IRB-Risikogewichtsfunktion beruht auf einem statistischen Kreditrisikomodell. Das Modell trennt das Kreditrisiko in:
+1. systematisches Risiko, 
+2. individuelles Risiko. 
+6.1 Systematisches Risiko
+Das systematische Risiko betrifft viele Kreditnehmer gleichzeitig.
+Beispiele:
+Wirtschaftskrise, 
+steigende Arbeitslosigkeit, 
+fallende Einkommen, 
+hohe Inflation, 
+steigende Zinsen, 
+Rezession. 
+6.2 Individuelles Risiko
+Das individuelle Risiko betrifft den einzelnen Kreditnehmer.
+Beispiele:
+persönlicher Arbeitsplatzverlust, 
+Krankheit, 
+unerwartete finanzielle Belastungen, 
+individuelles Fehlverhalten, 
+individuelle Überschuldung. 
+6.3 Mathematische Darstellung
+Das Ein-Faktor-Modell wird dargestellt als:
+X = √R × Y + √(1 - R) × ε
+Dabei gilt:
+X = gesamter Kreditrisikofaktor, 
+Y = systematischer Risikofaktor, 
+ε = individueller Risikofaktor, 
+R = Korrelation zwischen Kreditnehmer und systematischem Faktor. 
+Beide Faktoren werden als standardnormalverteilt angenommen:
+Y ~ N(0, 1)
+ε ~ N(0, 1)
+Die Symbole bedeuten:
+Mittelwert 0, 
+Varianz 1, 
+standardisierte Normalverteilung. 
+6.4 Warum bleiben die Varianz und Standardabweichung 1?
+Unter der Annahme, dass Y und ε unabhängig sind:
+Var(X)
+= Var(√R × Y + √(1 - R) × ε)
+Wegen der Unabhängigkeit:
+Var(X)
+= R × Var(Y) + (1 - R) × Var(ε)
+Da beide Varianzen 1 betragen:
+Var(X)
+= R × 1 + (1 - R) × 1
+Also:
+Var(X)
+= R + 1 - R
+Var(X)
+= 1
+Damit ist X ebenfalls standardnormalverteilt.
+
+7. Herleitung der Ausfallschwelle
+Ein Ausfall wird angenommen, wenn der Kreditrisikofaktor X einen bestimmten Schwellenwert unterschreitet.
+Ausfall, wenn X < c
+Der Schwellenwert c muss so gewählt werden, dass die unbedingte Ausfallwahrscheinlichkeit der PD entspricht:
+P(X < c) = PD
+Da X standardnormalverteilt ist:
+N(c) = PD
+Durch Anwendung der Umkehrfunktion der Normalverteilung:
+c = G(PD)
+Damit lautet die Ausfallbedingung:
+X < G(PD)
+Beispiel für eine PD von 2 %:
+G(0,02) ≈ -2,054
+Das bedeutet:
+Ausfall, wenn X < -2,054
+Die Ausfallschwelle liegt also weit links in der Normalverteilung, weil ein Ausfall bei einer PD von 2 % ein relativ seltenes Ereignis ist.
+
+8. Herleitung der bedingten Ausfallwahrscheinlichkeit
+Ausgangspunkt ist:
+X = √R × Y + √(1 - R) × ε
+Ein Kreditnehmer fällt aus, wenn:
+√R × Y + √(1 - R) × ε < G(PD)
+Nun wird nach ε aufgelöst.
+Zunächst:
+√(1 - R) × ε < G(PD) - √R × Y
+Dann Division durch √(1-R):
+ε <
+[G(PD) - √R × Y] / √(1-R)
+Da ε standardnormalverteilt ist, lautet die bedingte Ausfallwahrscheinlichkeit:
+P(Default | Y)
+=
+N(
+  [G(PD) - √R × Y] / √(1-R)
+)
+Im regulatorischen Stressszenario wird ein extremes, ungünstiges Quantil des systematischen Faktors verwendet. In der üblichen CRR-Schreibweise ergibt sich:
+PD_stress =
+N[
+  (1 / √(1-R)) × G(PD)
+  + √(R / (1-R)) × G(0,999)
+]
+Diese Formel misst also, wie hoch die Ausfallwahrscheinlichkeit in einem sehr ungünstigen systematischen Szenario wäre.
+
+9. Die IRB-Risikogewichtsfunktion
+Der Verlust im Stressszenario beträgt:
+LGD × PD_stress
+Der erwartete Verlust beträgt:
+EL = PD × LGD
+Die Kapitalanforderung soll im Wesentlichen den unerwarteten Verlust abdecken. Daher wird der erwartete Verlust abgezogen:
+K = LGD × PD_stress - PD × LGD
+Ausklammern von LGD:
+K = LGD × (PD_stress - PD)
+Setzt man die Formel für PD_stress ein, erhält man:
+K =
+LGD × N[
+  (1 / √(1-R)) × G(PD)
+  + √(R / (1-R)) × G(0,999)
+]
+- PD × LGD
+Die RWA berechnen sich anschließend mit:
+RWA = 12,5 × K × EAD
+
+10. Bestimmung der Korrelation im Retailgeschäft
+Für bestimmte Retail-Kredite wird die Korrelation R nicht frei von der Bank ausgewählt. Sie wird über eine regulatorische Funktion aus der PD abgeleitet.
+Eine typische Form der Korrelationsfunktion lautet:
+R(PD) =
+0,03 × A
++
+0,16 × (1 - A)
+mit:
+A =
+[1 - exp(-35 × PD)] / [1 - exp(-35)]
+Durch Umformung:
+R(PD) = 0,16 - 0,13 × A
+Wichtig:
+2 % = 0,02
+Nicht:
+2 % = 2
+Beispiel
+Bei:
+PD = 0,02
+ergibt sich:
+A =
+[1 - exp(-35 × 0,02)] / [1 - exp(-35)]
+Da:
+35 × 0,02 = 0,7
+folgt näherungsweise:
+A ≈ 0,503
+Dann:
+R =
+0,03 × 0,503
++
+0,16 × (1 - 0,503)
+Also:
+R ≈ 0,0151 + 0,0795
+R ≈ 0,0946
+Somit:
+R ≈ 9,46 %
+Die genaue Funktion hängt von der jeweils einschlägigen Retail-Unterkategorie ab. Für bestimmte revolvierende Forderungen können andere regulatorische Parameter gelten.
+
+11. Vollständiges Zahlenbeispiel
+Wir nehmen zur Veranschaulichung an:
+Kreditsumme: 10.000 €
+EAD:          10.000 €
+PD:           2 % = 0,02
+LGD:          45 % = 0,45
+Diese Werte sind beispielhaft und stellen keine individuelle Bankberechnung dar.
+Schritt 1: Korrelation
+Wie oben berechnet:
+R ≈ 0,0946
+Schritt 2: Normalverteilungsquantile
+Für PD = 0,02:
+G(0,02) ≈ -2,054
+Für das 99,9-%-Quantil:
+G(0,999) ≈ 3,090
+Schritt 3: Stressargument
+z =
+(1 / √(1 - 0,0946)) × (-2,054)
++
+√(0,0946 / (1 - 0,0946)) × 3,090
+Näherungsweise:
+z ≈ -2,156 + 0,999
+z ≈ -1,157
+Schritt 4: Bedingte Ausfallwahrscheinlichkeit
+PD_stress = N(-1,157)
+Näherungsweise:
+PD_stress ≈ 12,35 %
+Als Dezimalzahl:
+PD_stress ≈ 0,1235
+Schritt 5: Kapitalanforderungsfaktor K
+K = LGD × (PD_stress - PD)
+Einsetzen:
+K = 0,45 × (0,1235 - 0,02)
+Zuerst die Differenz:
+0,1235 - 0,02 = 0,1035
+Dann:
+K = 0,45 × 0,1035
+K ≈ 0,0466
+Also:
+K ≈ 4,66 %
+Schritt 6: RWA
+RWA = 12,5 × K × EAD
+Einsetzen:
+RWA = 12,5 × 0,0466 × 10.000 €
+Zunächst:
+0,0466 × 10.000 € = 466 €
+Dann:
+12,5 × 466 € = 5.825 €
+Ergebnis:
+RWA ≈ 5.825 €
+Schritt 7: Eigenkapitalanforderung
+Eigenkapitalanforderung = 8 % × RWA
+Einsetzen:
+Eigenkapitalanforderung
+= 0,08 × 5.825 €
+≈ 466 €
+Zusammenfassung:
+Größe
+Beispielwert
+EAD
+10.000 €
+PD
+2 %
+LGD
+45 %
+Korrelation
+ca. 9,46 %
+Stress-PD
+ca. 12,35 %
+Kapitalfaktor K
+ca. 4,66 %
+RWA
+ca. 5.825 €
+8-%-Kapitalanforderung
+ca. 466 €
+
+12. Erwarteter und unerwarteter Verlust
+12.1 Erwarteter Verlust
+Der erwartete Verlust lautet:
+EL = PD × LGD × EAD
+Einsetzen:
+EL = 0,02 × 0,45 × 10.000 €
+Zunächst:
+0,02 × 0,45 = 0,009
+Dann:
+EL = 0,009 × 10.000 €
+EL = 90 €
+Der erwartete Verlust beträgt in diesem Beispiel:
+90 €
+12.2 Unerwarteter Verlust beziehungsweise Kapitalbetrag
+Der Kapitalbetrag aus K lautet:
+K × EAD
+Einsetzen:
+0,0466 × 10.000 €
+≈ 466 €
+Dieser Betrag wird durch die Multiplikation mit 12,5 in RWA übersetzt:
+466 € × 12,5 ≈ 5.825 €
+12.3 Kein Widerspruch zwischen 90 € und 466 €
+Die beiden Beträge haben unterschiedliche Bedeutungen:
+90 €
+ist der modellierte erwartete Verlust.
+466 €
+ist der beispielhafte Kapitalbetrag für den unerwarteten Verlust beziehungsweise die IRB-Kapitalanforderung.
+5.825 €
+sind die daraus abgeleiteten RWA.
+Keiner dieser Beträge ist automatisch eine Gebühr, die Sie zahlen müssen.
+
+13. Interpretation des Risikogewichts
+Das implizite Risikogewicht lautet:
+Risikogewicht = 12,5 × K
+Mit:
+K ≈ 0,0466
+ergibt sich:
+Risikogewicht ≈ 12,5 × 0,0466
+Risikogewicht ≈ 0,5825
+Als Prozentwert:
+Risikogewicht ≈ 58,25 %
+Damit:
+RWA = 10.000 € × 58,25 %
+RWA ≈ 5.825 €
+Das erklärt, warum RWA nicht zwangsläufig dem Nominalbetrag des Kredits entsprechen.
+
+14. Was passiert, wenn die EAD niedriger ist?
+Angenommen, der Kreditnehmer hat bereits 2.000 € getilgt.
+Dann könnte vereinfacht gelten:
+EAD = 8.000 €
+Wenn alle anderen Parameter unverändert bleiben:
+RWA = 12,5 × 0,0466 × 8.000 €
+Da:
+12,5 × 0,0466 ≈ 0,5825
+folgt:
+RWA ≈ 0,5825 × 8.000 €
+RWA ≈ 4.660 €
+Die RWA sinken also mit der offenen Forderung.
+Wichtig: Das ist nur eine lineare Beispielrechnung. In der Praxis können sich Risikoparameter im Zeitablauf ändern.
+
+15. Sensitivität gegenüber den Risikoparametern
+15.1 Höhere PD
+Eine höhere PD erhöht grundsätzlich die modellierte Ausfallwahrscheinlichkeit und damit meistens auch:
+K
+und:
+RWA
+Beispielhafte Richtung:
+PD steigt
+→ Stressausfallwahrscheinlichkeit steigt
+→ K steigt
+→ RWA steigen
+15.2 Höhere LGD
+Die LGD steht in der Risikofunktion als Multiplikator:
+K = LGD × (PD_stress - PD)
+Wenn die LGD steigt, steigt – bei unveränderten anderen Parametern – auch K und damit die RWA.
+15.3 Höhere EAD
+Die RWA sind direkt proportional zur EAD:
+RWA = 12,5 × K × EAD
+Wenn sich die EAD verdoppelt und K unverändert bleibt, verdoppeln sich auch die RWA.
+15.4 Höhere Korrelation
+Eine höhere Korrelation bedeutet, dass sich individuelle Kreditrisiken stärker gemeinsam mit dem systematischen Risiko bewegen. Dadurch kann ein ungünstiges gesamtwirtschaftliches Szenario stärkere Auswirkungen auf das Portfolio haben.
+
+16. Was die RWA-Berechnung nicht aussagt
+Die RWA-Berechnung sagt nicht automatisch:
+ob die Bank den Kredit genehmigt, 
+welchen Zinssatz Sie erhalten, 
+wie hoch Ihre Monatsrate ist, 
+ob die Reise finanzierbar ist, 
+ob Ihre Bonität ausreichend ist, 
+ob eine Bank am Kreditvergleich teilnimmt, 
+wie hoch die tatsächliche Ausfallwahrscheinlichkeit Ihrer Person ist. 
+Die RWA sind primär eine aufsichtsrechtliche Größe der Bank.
+Für Sie als Kreditnehmer sind vor allem relevant:
+Kreditsumme
+Laufzeit
+monatliche Rate
+Sollzins
+effektiver Jahreszins
+Gesamtrückzahlungsbetrag
+kostenlose Sondertilgung
+Ratenpausen
+Vorfälligkeitsbedingungen
+
+17. Haushaltsrechnung für die Reise
+Bevor Sie eine Reise über einen Kredit finanzieren, sollten Sie Ihre monatliche Belastbarkeit prüfen.
+Einnahmen
+Nettogehalt
++ sonstige regelmäßige Einnahmen
+= monatliche Gesamteinnahmen
+Ausgaben
+Davon ziehen Sie insbesondere ab:
+Miete
+Nebenkosten
+Lebensmittel
+Versicherungen
+Telefon und Internet
+Abonnements
+Transportkosten
+Unterhalt
+bestehende Kreditraten
+sonstige regelmäßige Ausgaben
+Rücklage für unvorhergesehene Kosten
+Dann:
+Gesamteinnahmen
+- laufende Ausgaben
+= frei verfügbarer Betrag
+Die neue Kreditrate sollte nicht den gesamten frei verfügbaren Betrag aufzehren. Es sollte eine ausreichende Reserve bleiben.
+Bei einer Reise ist außerdem zu berücksichtigen:
+Die Reise kann nach kurzer Zeit beendet sein, während die Kreditraten möglicherweise mehrere Jahre weiterlaufen.
+
+18. Beispielhafte Rückzahlungslogik
+Die konkrete Rate hängt vom individuellen Angebot ab. Ohne Zinssatz und Laufzeit kann keine belastbare Rate berechnet werden.
+Allgemein gilt:
+Gesamtrückzahlung
+= Summe aller Monatsraten
++ mögliche Gebühren
+Bei einer längeren Laufzeit:
+sinkt häufig die monatliche Rate, 
+steigt häufig die Summe der gezahlten Zinsen. 
+Bei einer kürzeren Laufzeit:
+steigt häufig die monatliche Rate, 
+sinkt häufig die gesamte Zinsbelastung. 
+Entscheidend ist deshalb nicht nur die Monatsrate, sondern auch:
+Gesamtrückzahlungsbetrag
+
+19. Vollständige Formelübersicht
+19.1 Kapitalanforderung
+Kapitalanforderung = K × EAD
+19.2 Umrechnung in RWA
+RWA = (K × EAD) / 0,08
+oder:
+RWA = 12,5 × K × EAD
+19.3 Bedingte Stress-Ausfallwahrscheinlichkeit
+PD_stress =
+N[
+  (1 / √(1-R)) × G(PD)
+  + √(R / (1-R)) × G(0,999)
+]
+19.4 Kapitalfaktor
+K = LGD × PD_stress - PD × LGD
+oder:
+K = LGD × (PD_stress - PD)
+19.5 Erwarteter Verlust
+EL = PD × LGD × EAD
+19.6 Retail-Korrelation
+A =
+[1 - exp(-35 × PD)] / [1 - exp(-35)]
+R(PD) =
+0,03 × A
++
+0,16 × (1 - A)
+
+20. Gesamte Formel in einer Zeile
+Setzt man alle Bestandteile zusammen, ergibt sich vereinfacht:
+RWA =
+12,5 × EAD × LGD ×
+(
+  N[
+    (1 / √(1 - R(PD))) × G(PD)
+    + √(R(PD) / (1 - R(PD))) × G(0,999)
+  ]
+  - PD
+)
+Dabei ist:
+R(PD) =
+0,03 ×
+[1 - exp(-35 × PD)] / [1 - exp(-35)]
++
+0,16 ×
+[
+  1 -
+  [1 - exp(-35 × PD)] / [1 - exp(-35)]
+]
+
+21. Wichtige regulatorische Einschränkungen
+Die Darstellung ist eine lehrbuchartige Vereinfachung. Die tatsächliche Bankberechnung kann zusätzlich beeinflusst werden durch:
+die genaue Einstufung als Retail-Exposure, 
+die konkrete Retail-Unterkategorie, 
+regulatorische Mindestwerte, 
+aufsichtsrechtliche Parameteruntergrenzen, 
+Downturn-LGD, 
+EAD-Konversionsfaktoren, 
+die genaue Default-Definition, 
+Verwertungs- und Rückgewinnungsannahmen, 
+Laufzeitregelungen, 
+Portfolio- und Modellanforderungen, 
+regulatorische Kapitalpuffer, 
+Übergangsregelungen, 
+aktuelle Änderungen der CRR. 
+Die tatsächliche RWA kann deshalb von der Beispielrechnung erheblich abweichen.
+
+22. Praktische Schlussfolgerung für Ihre Amerika-Reise
+Für Ihre geplante Reise können Sie im CHECK24 Kreditvergleich eine Kreditanfrage mit folgenden Angaben stellen:
+Verwendungszweck: Reise
+Kreditsumme:      etwa 10.000 €
+Laufzeit:         nach Ihrer monatlichen Belastbarkeit
+Die konkreten Angebote der teilnehmenden Banken berücksichtigen Ihre persönliche finanzielle Situation und Bonität. Prüfen Sie insbesondere:
+1. effektiven Jahreszins, 
+2. monatliche Rate, 
+3. Gesamtrückzahlungsbetrag, 
+4. Laufzeit, 
+5. Möglichkeiten kostenloser Sondertilgungen, 
+6. Regelungen zu Ratenpausen, 
+7. erforderliche Nachweise, 
+8. verbleibenden finanziellen Spielraum nach Abzug der Rate. 
+Schlussformel
+Die gesamte Berechnung lässt sich inhaltlich so zusammenfassen:
+Risikoparameter
+PD, LGD und EAD
+        ↓
+Stress-Ausfallwahrscheinlichkeit
+        ↓
+Kapitalfaktor K
+        ↓
+Kapitalanforderung K × EAD
+        ↓
+RWA = 12,5 × K × EAD
+Für das beispielhafte Szenario:
+EAD = 10.000 €
+PD  = 2 %
+LGD = 45 %
+ergibt sich näherungsweise:
+K   ≈ 4,66 %
+RWA ≈ 5.825 €
+Diese Werte dienen ausschließlich der mathematischen Erklärung. Die konkrete RWA-Berechnung Ihrer Bank ist nur mit deren genehmigten internen Parametern und der exakten regulatorischen Einstufung möglich.
+
+VerkleinernSchließen

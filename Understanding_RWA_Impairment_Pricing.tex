@@ -1,0 +1,1418 @@
+% =====================================================================
+% Understanding RWA, Impairment, and Risk-Sensitive Pricing
+% A Study Textbook on the A-IRB Risk-Weight Function, IFRS 9 Expected
+% Credit Losses, and Risk-Based Loan Pricing
+%
+% Compile with:  lualatex Understanding_RWA_Impairment_Pricing.tex
+%   (run twice for the table of contents and cross-references;
+%    pdflatex also works, lualatex is recommended for the fonts)
+%
+% Companion scripts: RWA_visualised.py, Impairment_visualised.py,
+%                    Pricing_visualised.py
+%
+% Created with AI assistance; see Chapter 1 for provenance and
+% disclaimers.
+% =====================================================================
+\documentclass[11pt,a4paper]{report}
+
+% ---------- geometry -------------------------------------------------
+\usepackage[a4paper,margin=2.5cm,headheight=14pt]{geometry}
+
+% ---------- typography (matching the author's TeX setup) --------------
+\usepackage{tgpagella}          % Palatino-like text font (as used by moderncv)
+\usepackage{newpxmath}          % matching math font
+\usepackage[T1]{fontenc}
+\usepackage{microtype}
+
+% ---------- math ------------------------------------------------------
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{mathtools}
+
+% ---------- tables, figures ------------------------------------------
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning}
+
+% ---------- colours (echoing the cerulean scheme of the author's CV) ---
+\usepackage{xcolor}
+\usepackage{eurosym}
+\definecolor{ceruleanlink}{HTML}{007B8A}
+\definecolor{accentgrey}{HTML}{555555}
+\newcommand{\EUR}[1]{\euro#1}
+
+% ---------- links ----------------------------------------------------
+\usepackage[colorlinks=true,linkcolor=ceruleanlink,citecolor=ceruleanlink,urlcolor=ceruleanlink]{hyperref}
+\usepackage{enumitem}
+
+% ---------- headers ----------------------------------------------------
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[LE]{\small\itshape Understanding RWA, Impairment, and Pricing}
+\fancyhead[RO]{\small\itshape\nouppercase{\leftmark}}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% ---------- theorem environments ---------------------------------------
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}[chapter]
+\newtheorem{example}[definition]{Example}
+\newtheorem{remark}[definition]{Remark}
+\theoremstyle{plain}
+\newtheorem{lemma}[definition]{Lemma}
+\newtheorem{theorem}[definition]{Theorem}
+\newtheorem{corollary}[definition]{Corollary}
+
+% ---------- convenience macros ------------------------------------------
+\newcommand{\PD}{\mathrm{PD}}
+\newcommand{\LGD}{\mathrm{LGD}}
+\newcommand{\EAD}{\mathrm{EAD}}
+\newcommand{\RWA}{\mathrm{RWA}}
+\newcommand{\EL}{\mathrm{EL}}
+\newcommand{\EIR}{\mathrm{EIR}}
+\newcommand{\ECL}{\mathrm{ECL}}
+\newcommand{\raroc}{\mathrm{RAROC}}
+\newcommand{\keyinsight}[1]{\par\vspace{2mm}\noindent\fbox{\parbox{0.96\textwidth}{\textbf{Key insight.} #1}}\par\vspace{2mm}}
+
+\title{\textbf{Understanding RWA, Impairment, and\\[2mm] Risk-Sensitive Pricing}\\[6mm]
+\large A Study Textbook on the A-IRB Risk-Weight Function,\\ IFRS~9 Expected Credit Losses, and Risk-Based Loan Pricing}
+\author{}
+\date{October 2026}
+
+\begin{document}
+
+\maketitle
+\thispagestyle{empty}
+\vfill
+\begin{center}
+\itshape Running example throughout this book:\\
+an unsecured consumer instalment loan of \EUR{10{,}000}.
+\end{center}
+\vfill
+
+\tableofcontents
+
+% =====================================================================
+\chapter{Introduction, Provenance, and How to Use This Book}
+% =====================================================================
+
+\section{Purpose and scope}
+
+A bank that grants a loan answers three quantitatively different
+questions about the same credit risk:
+
+\begin{enumerate}[label=(\alph*)]
+  \item \textbf{Regulation (CRR/Basel):} \emph{How much own funds must we
+        hold against the \emph{unexpected} loss of this loan?} The answer
+        is expressed in risk-weighted assets (RWA) and derived from the
+        A-IRB risk-weight function --- the \emph{Gordy formula}.
+  \item \textbf{Accounting (IFRS 9):} \emph{How much \emph{expected} loss
+        must we recognise as an impairment allowance today?} The answer is
+        the expected credit loss (ECL), possibly probability-weighted
+        across macroeconomic scenarios.
+  \item \textbf{Management (pricing):} \emph{What interest rate must we
+        charge so that the loan earns its cost of capital after covering
+        funding, operating cost, and expected loss?} The answer is the
+        risk-sensitive break-even rate derived from a RAROC condition.
+\end{enumerate}
+
+This book develops all three answers from first principles, at the level
+of a business-mathematics graduate (probability, statistics, financial
+mathematics): short proofs where feasible, proof sketches where a full
+proof would exceed the scope, worked numerical examples in every chapter,
+and references to the primary regulatory and academic sources. One single
+loan --- an unsecured consumer instalment loan of \EUR{10{,}000} ---
+serves as the running example throughout, so that the three frameworks
+can be compared on identical numbers.
+
+Three companion Python scripts (\texttt{RWA\_visualised.py},
+\texttt{Impairment\_visualised.py}, \texttt{Pricing\_visualised.py})
+implement the mathematics of Parts~A--C as interactive Flask dashboards;
+Chapter~\ref{chap:dashboards} explains how to run them and how every
+number in this book can be reproduced with them.
+
+\section{How this book was created}
+
+This textbook was drafted by a large language model (AI) at the request
+of the reader, in an iterative process: the mathematical content follows
+published regulatory and academic sources (cited in the References and
+rated in the Source Notes); every numerical example was computed with
+executable code, not asserted; and two errors found in an earlier draft
+(an incorrect risk weight for the PD~$=8\%$ comparison and an
+inconsistent lifetime-EL pricing basis) were corrected against
+computation before publication. The prose was then revised for
+textbook-style exposition.
+
+\textbf{Disclaimers.} The reader should treat this book accordingly:
+
+\begin{enumerate}
+  \item This is an educational treatment with deliberate didactic
+        simplifications. It is not legal, regulatory, accounting, tax,
+        or investment advice.
+  \item The example parameters (PD~$=2\%$, LGD~$=45\%$, \dots) are
+        illustrative. A real A-IRB bank's parameters come from internally
+        validated, supervisor-approved models and cannot be reconstructed
+        from outside the bank.
+  \item The pricing model is a teaching model. Real banks add acquisition
+        costs, liquidity costs, Pillar~2 add-ons, MREL and
+        leverage-ratio constraints, competitive considerations, and
+        behavioural effects.
+  \item Regulation changes. CRR amendments (``CRR3'', output floors) and
+        IFRS~9 interpretation practice evolve; always check the current
+        consolidated text on EUR-Lex and the IFRS Foundation website.
+  \item Nothing in this book predicts whether any specific borrower
+        receives a loan, or at what rate. The book explains how a bank
+        \emph{measures and prices} credit risk, not whether credit
+        \emph{is granted}.
+\end{enumerate}
+
+\section{Notation}
+
+$\Phi$ denotes the standard normal distribution function and
+$G = \Phi^{-1}$ its inverse (quantile function). $\mathbb{E}$ is
+expectation, $\mathbb{P}$ probability, $\Var$ variance. Currency amounts
+are euros. A full notation table is given in
+Appendix~\ref{app:notation}.
+
+% =====================================================================
+\chapter{Mathematical Foundations}
+\label{chap:foundations}
+% =====================================================================
+
+This chapter collects the probabilistic and financial tools used later,
+so that the derivations in Parts~A--C stay self-contained. Readers with
+a statistics background may skim it and return on demand.
+
+\section{The standard normal distribution and its quantiles}
+
+\begin{definition}[Standard normal distribution]
+A random variable $Z$ is \emph{standard normally distributed}
+($Z\sim\mathcal{N}(0,1)$) if its density is
+\begin{equation}
+  \varphi(z)=\frac{1}{\sqrt{2\pi}}\,e^{-z^{2}/2},\qquad z\in\mathbb{R},
+\end{equation}
+with distribution function
+\begin{equation}
+  \Phi(x)=\int_{-\infty}^{x}\varphi(z)\,dz .
+\end{equation}
+\end{definition}
+
+Two numerical values recur throughout this book and should be memorised:
+\begin{equation}
+  G(0.02) \approx -2.0537,
+  \qquad
+  G(0.999) \approx 3.0902 .
+\end{equation}
+The first says: a $2\%$ default probability corresponds to a default
+threshold $2.05$ standard deviations \emph{below} the mean of the
+credit-worthiness variable. The second says: the 99.9\%\ quantile sits
+$3.09$ standard deviations \emph{above} the mean of the systematic
+factor --- the supervisory stress state.
+
+\begin{lemma}[Linear combinations of independent normals]
+\label{lem:linnorm}
+Let $Y,\varepsilon$ be independent with
+$Y,\varepsilon\sim\mathcal{N}(0,1)$ and let $a,b\in\mathbb{R}$. Then
+\begin{equation}
+  X=aY+b\varepsilon \sim \mathcal{N}\!\bigl(0,\; a^{2}+b^{2}\bigr).
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+The characteristic function of $X$ is
+\begin{equation}
+  \mathbb{E}\bigl[e^{it(aY+b\varepsilon)}\bigr]
+  =\mathbb{E}\bigl[e^{itaY}\bigr]\,\mathbb{E}\bigl[e^{itb\varepsilon}\bigr]
+  =e^{-(at)^{2}/2}\,e^{-(bt)^{2}/2}
+  =e^{-(a^{2}+b^{2})t^{2}/2},
+\end{equation}
+using independence and the characteristic function
+$e^{-t^{2}/2}$ of the standard normal. The result is the characteristic
+function of a $\mathcal{N}(0,a^{2}+b^{2})$ variable, and
+characteristic functions determine the distribution uniquely.
+\end{proof}
+
+\section{Conditional probability and conditional expectation}
+
+For events $A$ and $B$ with $\mathbb{P}(B)>0$,
+\begin{equation}
+  \mathbb{P}(A\mid B)=\frac{\mathbb{P}(A\cap B)}{\mathbb{P}(B)} .
+\end{equation}
+If $X=aY+b\varepsilon$ and we \emph{condition on} the realised value
+$Y=y$, then $X$ becomes a deterministic shift plus noise:
+\begin{equation}
+  X \mid Y=y \;\sim\; \mathcal{N}\!\bigl(ay,\; b^{2}\bigr).
+  \label{eq:condnormal}
+\end{equation}
+Equation~\eqref{eq:condnormal} is the engine of the entire A-IRB
+derivation: conditioning on a bad economy shifts the mean of every
+borrower's credit-worthiness downward and thereby raises every
+borrower's default probability.
+
+\section{Expectation, variance decomposition, and tail risk}
+
+For a loss variable $L\ge 0$,
+\begin{equation}
+  \EL=\mathbb{E}[L] \qquad\text{(expected loss)},
+\end{equation}
+while economic or regulatory capital addresses the \emph{upper tail}:
+\begin{equation}
+  \text{capital} \approx \text{tail quantile of } L \;-\; \EL .
+\end{equation}
+This ``tail minus expectation'' logic is the single most important
+structural idea of this book:
+
+\keyinsight{Expected loss is a \emph{cost of doing business} --- it is
+priced into the interest rate and provisioned under IFRS~9.
+\emph{Unexpected} loss --- the deviation beyond expectation in a severe
+scenario --- is what regulatory capital must absorb. Part~A computes
+the tail term, Part~B the expectation term, and Part~C charges both to
+the customer.}
+
+\section{Present value and the annuity}
+
+A cash flow $C$ received at time $t$ has present value
+$C\,(1+r)^{-t}$ at discount rate $r$. For a loan of principal $N$,
+nominal rate $r$, and term $n$ years with constant annual annuity $A$,
+the condition $\PV= N$ gives
+\begin{equation}
+  A=\frac{N\,r}{1-(1+r)^{-n}} .
+  \label{eq:annuity}
+\end{equation}
+\begin{example}[Running example, annuity]
+With $N=\EUR{10{,}000}$, $r=8.5\%$, $n=3$:
+\begin{equation}
+  A=\frac{10{,}000\times 0.085}{1-1.085^{-3}}=\EUR{3{,}915.39} .
+\end{equation}
+The amortisation schedule (used in Parts~B and~C) is shown in
+Table~\ref{tab:amortisation}.
+\end{example}
+
+\begin{table}[htbp]
+\centering
+\caption{Amortisation schedule of the running example
+(\EUR{10{,}000}, $8.5\%$, 3 years, annuity \EUR{3{,}915.39}).}
+\label{tab:amortisation}
+\begin{tabular}{rrrrr}
+\toprule
+Year & Balance (BoY) & Interest & Principal & Balance (EoY)\\
+\midrule
+1 & 10{,}000.00 & 850.00 & 3{,}065.39 & 6{,}934.61\\
+2 & 6{,}934.61 & 589.44 & 3{,}325.95 & 3{,}608.66\\
+3 & 3{,}608.66 & 306.74 & 3{,}608.66 & 0.00\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% =====================================================================
+\chapter{Part A --- Risk-Weighted Assets under the A-IRB Approach}
+\label{chap:rwa}
+% =====================================================================
+
+\section{The regulatory question}
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[node distance=10mm,
+  box/.style={draw=ceruleanlink, rounded corners, fill=white,
+              minimum width=52mm, minimum height=8mm, align=center}]
+\node[box] (params) {Risk parameters $\PD$, $\LGD$, $\EAD$};
+\node[box, below=of params] (rwf) {Risk-weight function (Gordy): capital factor $K$};
+\node[box, below=of rwf] (rwa) {$\RWA = 12.5 \times K \times \EAD$};
+\node[box, below=of rwa] (cap) {Own funds requirement $=8\%\times\RWA$};
+\draw[-{Latex[length=2mm]}] (params) -- (rwf);
+\draw[-{Latex[length=2mm]}] (rwf) -- (rwa);
+\draw[-{Latex[length=2mm]}] (rwa) -- (cap);
+\end{tikzpicture}
+\caption{The A-IRB computation chain for a single exposure.}
+\label{fig:chain}
+\end{figure}
+
+Pillar~1 of the capital framework requires banks to hold own funds of at
+least $8\%$ of their risk-weighted assets. Two building blocks therefore
+have to be understood: \emph{risk-weighted assets} and the $8\%$\ rule.
+
+\begin{definition}[Risk-weighted assets]
+The risk-weighted assets of an exposure are its exposure value
+$\EAD$ multiplied by a \emph{risk weight} $RW$:
+\begin{equation}
+  \RWA = RW \times \EAD .
+\end{equation}
+In the standardised approach $RW$ is a fixed supervisory percentage;
+in the IRB approaches $RW$ is \emph{computed} from risk parameters.
+\end{definition}
+
+\section{The factor 12.5: a complete derivation}
+
+\begin{theorem}[RWA scaling]
+Let the minimum own funds ratio be $8\%$, and let the capital
+requirement for one exposure be $K\times\EAD$ (with $K$ derived from the
+risk-weight function). Then the risk-weighted assets that make the two
+statements consistent are
+\begin{equation}
+  \RWA = \frac{K\times\EAD}{0.08} = 12.5 \times K \times \EAD .
+  \label{eq:scaling}
+\end{equation}
+\end{theorem}
+
+\begin{proof}
+By definition of the capital ratio, the requirement is
+\begin{equation}
+  \text{own funds} = 0.08 \times \RWA .
+\end{equation}
+The IRB capital requirement for the exposure is
+$\text{own funds} = K \times \EAD$. Equating and dividing by $0.08$
+($1/0.08 = 12.5$) yields \eqref{eq:scaling}.
+\end{proof}
+
+This is pure algebra --- there is no economics in the $12.5$; the economics
+sits entirely inside $K$, to which we now turn.
+
+\section{The three risk parameters}
+
+\begin{description}
+\item[PD (probability of default).] The probability that the borrower
+      defaults within one year under the supervisory default definition
+      (CRR Art.~178: 90 days past due or unlikeliness to pay). Running
+      example: $\PD=2\%$.
+\item[LGD (loss given default).] The expected loss as a fraction of the
+      exposure \emph{given} default, net of recoveries, including
+      workout costs and discounting of recoveries (CRR Art.~181).
+      Unsecured consumer loans have no collateral, but collections
+      recoveries still reduce the loss. Running example: $\LGD=45\%$.
+\item[EAD (exposure at default).] The expected outstanding amount at the
+      moment of default. For a fully drawn instalment loan the EAD
+      approximates the outstanding balance; immediately after
+      disbursement, $\EAD\approx\EUR{10{,}000}$. Under A-IRB the bank
+      estimates EAD internally.
+\end{description}
+
+\begin{remark}[F-IRB versus A-IRB]
+Under the Foundation IRB approach the bank estimates only PD; LGD and
+EAD follow supervisory values. Under the \emph{Advanced} IRB approach
+the bank estimates PD, LGD, and EAD with internal, supervisor-approved
+models. The risk-weight function itself is prescribed --- the ``A''
+refers to the parameter estimation, not to the formula.
+\end{remark}
+
+\section{The single-factor model: from Merton to Vasicek}
+
+The IRB formula is not an arbitrary regulatory curve. Its intellectual
+pedigree is Merton (1974) $\to$ Vasicek (2002) $\to$ Gordy (2003)
+$\to$ Basel II/III IRB $\to$ CRR Arts.~153--154. We derive it in four
+steps.
+
+\subsection{Step 1: the factor model}
+
+\begin{definition}[Asymptotic single risk factor model]
+For each borrower $i$, the standardised asset (credit-worthiness) return
+is
+\begin{equation}
+  X_i=\sqrt{R}\;Y+\sqrt{1-R}\;\varepsilon_i ,
+  \label{eq:asrf}
+\end{equation}
+where $Y\sim\mathcal{N}(0,1)$ is a single systematic factor (the
+economy), $\varepsilon_i\sim\mathcal{N}(0,1)$ is idiosyncratic noise,
+all variables mutually independent, and $R\in(0,1)$ is the asset
+correlation.
+\end{definition}
+
+\begin{lemma}[$X_i$ is standard normal]
+\label{lem:standardnormal}
+$X_i\sim\mathcal{N}(0,1)$.
+\end{lemma}
+
+\begin{proof}
+By Lemma~\ref{lem:linnorm} with $a=\sqrt R$, $b=\sqrt{1-R}$:
+$\Var(X_i)=R+(1-R)=1$ and mean $0$; normality follows from the linear
+combination of independent Gaussians.
+\end{proof}
+
+Interpretation: a borrower's fortunes are driven by the macroeconomy
+(weight $\sqrt R$) and by personal circumstances (weight
+$\sqrt{1-R}$). The correlation of any two borrowers' returns is
+\begin{equation}
+  \operatorname{Cov}(X_i,X_j)=R\Var(Y)=R,
+\end{equation}
+which explains the name ``asset correlation'' for $R$.
+
+\subsection{Step 2: the default threshold}
+
+\begin{definition}[Merton default rule]
+Borrower $i$ defaults in the period iff $X_i<c$, where the threshold $c$
+is chosen such that the \emph{unconditional} default probability equals
+the PD:
+\begin{equation}
+  \mathbb{P}(X_i<c)=\PD .
+\end{equation}
+\end{definition}
+
+Since $X_i\sim\mathcal{N}(0,1)$, the threshold is
+\begin{equation}
+  \Phi(c)=\PD
+  \qquad\Longleftrightarrow\qquad
+  c=G(\PD)=\Phi^{-1}(\PD).
+  \label{eq:threshold}
+\end{equation}
+For $\PD=2\%$: $c=G(0.02)=-2.0537$. Default occurs $2.05$ standard
+deviations below average fortune --- a rare event in good times.
+
+\subsection{Step 3: the conditional default probability}
+
+Now condition on the economy being in a specific state $Y=y$. Using
+\eqref{eq:condnormal} with $a=\sqrt R$, $b=\sqrt{1-R}$:
+\begin{equation}
+  X_i\mid Y=y \;\sim\; \mathcal{N}\!\bigl(\sqrt{R}\,y,\;1-R\bigr),
+\end{equation}
+hence
+\begin{align}
+  \mathbb{P}(\text{default}\mid Y=y)
+  &=\mathbb{P}\!\bigl(\sqrt{R}\,y+\sqrt{1-R}\,\varepsilon<G(\PD)\bigr)\\
+  &=\mathbb{P}\!\left(\varepsilon<
+      \frac{G(\PD)-\sqrt{R}\,y}{\sqrt{1-R}}\right)
+   =\Phi\!\left(\frac{G(\PD)-\sqrt{R}\,y}{\sqrt{1-R}}\right).
+  \label{eq:condpd}
+\end{align}
+
+The regulator fixes the adverse systematic state at the 99.9\%\ quantile.
+With the CRR sign convention (adverse state in the upper tail),
+\begin{equation}
+  y^{\text{stress}}=G(0.999)\approx 3.0902 ,
+\end{equation}
+and the \emph{stress default probability} becomes
+\begin{equation}
+  \boxed{\;
+  \PD^{\text{stress}}
+  =\Phi\!\left[
+  \frac{1}{\sqrt{1-R}}\,G(\PD)
+  +\sqrt{\frac{R}{1-R}}\;G(0.999)
+  \right]}
+  \label{eq:pdstress}
+\end{equation}
+--- the term in square brackets is simply
+\eqref{eq:condpd} with $y=G(0.999)$, split over the common denominator
+$\sqrt{1-R}$.
+
+\begin{remark}[Why the stress PD can be many times the PD]
+The correlation term multiplies $G(0.999)\approx 3.09$ by
+$\sqrt{R/(1-R)}$. For $R\approx 9.5\%$ this contributes roughly $+1.0$
+to the argument of $\Phi$. Near the far left tail of $\Phi$, one unit
+of argument is worth a \emph{multiplication} of the tail probability:
+with $\PD=2\%$ the stress PD is $12.3\%$ --- six times higher. This
+systematic amplification is precisely the economic content of the
+correlation.
+\end{remark}
+
+\subsection{Step 4: capital equals stress loss minus expected loss}
+
+The loss rate of the exposure, \emph{given} default, is $\LGD$. In the
+stress state the expected loss rate is therefore
+$\LGD\times\PD^{\text{stress}}$; the unconditional expected loss rate is
+$\EL=\PD\times\LGD$. Capital covers the \emph{unexpected} part:
+
+\begin{equation}
+  \boxed{\;
+  K=\LGD\times\Phi\!\left[
+  \frac{1}{\sqrt{1-R}}\,G(\PD)
+  +\sqrt{\frac{R}{1-R}}\;G(0.999)\right]-\PD\times\LGD}
+  \label{eq:gordy}
+\end{equation}
+
+This is the \textbf{Gordy formula}. Factoring out $\LGD$ gives the
+transparent form $K=\LGD\times(\PD^{\text{stress}}-\PD)$: capital
+equals the loss-given-default times the \emph{excess} of the stress
+default probability over the ordinary one.
+
+\section{Why the formula applies loan-by-loan: Gordy's theorem}
+
+Regulation applies \eqref{eq:gordy} exposure by exposure. That is only
+legitimate because of a remarkable asymptotic property.
+
+\begin{theorem}[Gordy (2003), portfolio invariance --- proof sketch]
+\label{thm:gordy}
+Consider a portfolio of $n$ exposures of equal size, each following
+\eqref{eq:asrf} with the same $R$ and independent
+$\varepsilon_i$. Conditionally on $Y$, defaults are independent, each
+with probability $\PD^{\text{stress}}(Y)$. By the law of large numbers,
+as $n\to\infty$ the portfolio default rate converges to
+$\PD^{\text{stress}}(Y)$ almost surely; idiosyncratic risk vanishes. The
+portfolio loss rate at the 99.9\%\ quantile of $Y$ is therefore
+exactly $\LGD\times\PD^{\text{stress}}$, with no residual idiosyncratic
+term, and the capital per unit of exposure depends \emph{only} on the
+exposure's own $(\PD,\LGD)$ and on the common $R$ --- not on the
+portfolio's composition.
+\end{theorem}
+
+The full proof (Gordy 2003) requires the uniform-exposure-size and
+single-factor assumptions; both are idealisations. Real portfolios are
+finite and concentrated, which is why banks hold granularity buffers and
+why economic capital (Chapter~\ref{chap:pricing}) exceeds regulatory
+capital. But the theorem explains the structural feature that makes the
+IRB usable: \emph{capital is additive because idiosyncratic risk is
+diversified away in the limit, and what remains is systematic risk,
+priced identically for every exposure with the same parameters.}
+
+\section{The CRR retail correlation function}
+
+For retail exposures, the CRR (Art.~154) does not let the bank choose
+$R$ freely. It prescribes a decreasing function of the PD. Writing
+\begin{equation}
+  A(\PD)=\frac{1-e^{-35\,\PD}}{1-e^{-35}},
+\end{equation}
+the correlation is
+\begin{equation}
+  \boxed{\;
+  R(\PD)=0.03\times A(\PD)+0.16\times\bigl(1-A(\PD)\bigr)
+        =0.16-0.13\times A(\PD)}
+  \label{eq:corr}
+\end{equation}
+
+Interpretation of the two anchors:
+
+\begin{itemize}
+\item $\PD\to 0$: $A\to 0$, hence $R\to 16\%$. Very safe borrowers are
+      driven almost entirely by long macro cycles --- think of prime
+      mortgage borrowers who only default in system-wide crises.
+\item $\PD\to 1$: $A\to 1$, hence $R\to 3\%$. Already-distressed
+      borrowers default for idiosyncratic reasons; the economy matters
+      less for \emph{whether} they default.
+\end{itemize}
+
+For special retail sub-classes the CRR replaces \eqref{eq:corr} by
+constants: $R=0.15$ for exposures secured by immovable property, and
+$R=0.04$ for qualifying revolving retail exposures. Our unsecured
+instalment loan uses the general function \eqref{eq:corr}.
+
+\section{Worked example: the \EUR{10{,}000} loan, step by step}
+\label{sec:workedA}
+
+Assumptions (illustrative): $\EAD=\EUR{10{,}000}$, $\PD=2\%$,
+$\LGD=45\%$, non-revolving unsecured retail.
+
+\paragraph{Step 1 --- Correlation.}
+With $35\times\PD = 0.7$:
+\begin{align}
+  A &= \frac{1-e^{-0.7}}{1-e^{-35}}=0.5034,\\
+  R &= 0.16-0.13\times 0.5034 = 0.0946 \quad(9.46\%).
+\end{align}
+
+\paragraph{Step 2 --- Quantiles.}
+\begin{equation}
+  G(0.02)=-2.0537,\qquad G(0.999)=3.0902 .
+\end{equation}
+
+\paragraph{Step 3 --- Stress argument.}
+\begin{equation}
+  z=\frac{-2.0537}{\sqrt{1-0.0946}}
+     +\sqrt{\frac{0.0946}{1-0.0946}}\times 3.0902
+    =-2.1561+1.0000=-1.1597 .
+\end{equation}
+
+\paragraph{Step 4 --- Stress PD.}
+\begin{equation}
+  \PD^{\text{stress}}=\Phi(-1.1597)=12.31\% .
+\end{equation}
+A once-in-a-thousand-years downturn raises this borrower's default
+probability from $2\%$ to $12.3\%$.
+
+\paragraph{Step 5 --- Capital factor.}
+\begin{equation}
+  K=0.45\times(0.1231-0.02)=0.45\times 0.1031=0.0464\quad(4.64\%).
+\end{equation}
+
+\paragraph{Step 6 --- RWA and own funds.}
+\begin{align}
+  RW &= 12.5\times K = 58.0\%,\\
+  \RWA &= 0.5799\times 10{,}000 = \EUR{5{,}798.64},\\
+  \text{own funds} &= 0.08\times 5{,}798.64=\EUR{463.89}.
+\end{align}
+
+\begin{table}[htbp]
+\centering
+\caption{Part A summary for the running example.}
+\begin{tabular}{lr}
+\toprule
+Quantity & Value\\
+\midrule
+$\PD$ / $\LGD$ / $\EAD$ & $2\%$ / $45\%$ / \EUR{10{,}000}\\
+Correlation $R$ & $9.46\%$\\
+Stress PD (99.9\%) & $12.31\%$\\
+Capital factor $K$ & $4.64\%$\\
+Risk weight $RW$ & $58.0\%$\\
+$\RWA$ & \EUR{5{,}798.64}\\
+Expected loss $\PD\times\LGD\times\EAD$ & \EUR{90.00}\\
+Own funds requirement ($8\%\times\RWA$) & \EUR{463.89}\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\keyinsight{The bank neither expects to lose \EUR{5{,}798.64} nor
+\EUR{463.89}. It \emph{expects} \EUR{90} of loss (covered by pricing and
+provisions) and must \emph{hold} \EUR{463.89} of capital against the
+99.9\%\ tail deviation beyond that expectation.}
+
+\section{Sensitivities}
+
+Table~\ref{tab:pdsens} varies the PD; Table~\ref{tab:lgdsens} the LGD.
+The required rate column anticipates Chapter~\ref{chap:pricing}
+($12$-month EL basis, funding $2\%$, opex \EUR{166.67} p.a., hurdle
+$12\%$, regulatory capital).
+
+\begin{table}[htbp]
+\centering
+\caption{PD sensitivity ($\LGD=45\%$, $\EAD=\EUR{10{,}000}$).}
+\label{tab:pdsens}
+\begin{tabular}{rrrrrrrr}
+\toprule
+$\PD$ & $R$ & $\PD^{\text{stress}}$ & $K$ & $RW$ & $\RWA$ & own funds & req.\ rate\\
+\midrule
+0.5\% & 13.9\% & 6.25\% & 2.59\% & 32.4\% & 3{,}236 & 258.89 & 5.22\%\\
+1.0\% & 12.2\% & 9.14\% & 3.66\% & 45.8\% & 4{,}577 & 366.18 & 5.73\%\\
+2.0\% & 9.5\% & 12.31\% & 4.64\% & 58.0\% & 5{,}799 & 463.89 & 6.56\%\\
+5.0\% & 5.3\% & 16.81\% & 5.31\% & 66.4\% & 6{,}642 & 531.32 & 8.65\%\\
+8.0\% & 3.8\% & 20.64\% & 5.69\% & 71.1\% & 7{,}108 & 568.64 & 10.69\%\\
+15\% & 3.1\% & 30.75\% & 7.09\% & 88.6\% & 8{,}860 & 708.81 & 15.53\%\\
+30\% & 3.0\% & 50.44\% & 9.20\% & 115.0\% & 11{,}498 & 919.82 & 25.76\%\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[htbp]
+\centering
+\caption{LGD sensitivity ($\PD=2\%$, $\EAD=\EUR{10{,}000}$).}
+\label{tab:lgdsens}
+\begin{tabular}{rrrr}
+\toprule
+$\LGD$ & $K$ & $\RWA$ & $\EL$ (p.a.)\\
+\midrule
+10\% & 1.03\% & 1{,}288.59 & 20.00\\
+25\% & 2.58\% & 3{,}221.47 & 50.00\\
+45\% & 4.64\% & 5{,}798.64 & 90.00\\
+65\% & 6.70\% & 8{,}375.82 & 130.00\\
+90\% & 9.28\% & 11{,}597.29 & 180.00\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{remark}[Reading the PD table]
+$K$ rises with $\PD$ but \emph{less than proportionally}, because the
+correlation falls as $\PD$ rises ($16\%\to 3\%$), cushioning the stress
+amplification. The risk weight is thus concave in $\PD$. RWA is
+linear in $\EAD$ and $\LGD$. The pricing-relevant quantity, however, is
+dominated by expected loss: between $\PD=2\%$ and $\PD=8\%$ the own
+funds requirement grows by only $23\%$ while the EL grows by a factor
+of four --- a first glimpse of why risk-based pricing is driven by
+Part~B more than by Part~A.
+\end{remark}
+
+\section{Limitations of Part A}
+
+\begin{itemize}
+\item Real A-IRB banks face PD floors, downturn-LGD requirements,
+      CCF/EAD model risk, and (since CRR2) an output floor tying IRB
+      RWA to a percentage of standardised RWA --- the applicable
+      percentage depends on the bank's transition schedule and current
+      CRR state.
+\item The ASRF assumptions (infinite granularity, single factor) fail
+      for concentrated portfolios; supervisory add-ons and Pillar~2
+      address this.
+\item The 99.9\%\ level is a calibration choice, not an empirical fact
+      about economies.
+\end{itemize}
+
+% =====================================================================
+\chapter{Part B --- Impairment under IFRS 9}
+\label{chap:ifrs9}
+% =====================================================================
+
+\section{The accounting question}
+
+Accounting asks a different question than regulation. Regulation asks
+how much capital to hold against unexpected loss; IFRS~9 asks how much
+\emph{expected} loss to recognise \emph{today} as an allowance
+(impairment) in profit or loss. IFRS~9 (effective 2018) replaced the
+IAS~39 incurred-loss model --- under which losses were recognised only
+when a triggering event had occurred --- with a forward-looking
+expected-credit-loss model. The philosophical change: loss recognition
+moved from \emph{evidence of damage} to \emph{probability-weighted
+forecast}.
+
+\section{The three-stage model}
+
+IFRS~9 (paras 5.5.15--5.5.20) sorts financial assets into three stages.
+The classification governs two things: the \emph{measurement horizon}
+of the allowance and the \emph{interest recognition basis}.
+
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+Stage & Trigger & Allowance / interest basis\\
+\midrule
+1 & no significant deterioration & 12-month ECL; interest gross\\
+2 & significant increase in credit risk & lifetime ECL; interest gross\\
+3 & credit-impaired (default-like) & lifetime ECL; interest net\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The 12-month/lifetime distinction is the \emph{cliff} of the model.
+Crossing a stage-2 trigger multiplies the allowance for a multi-period
+loan, which is why stage migration --- not default itself --- is a major
+driver of bank P\&L volatility in downturns.
+
+\begin{definition}[Significant increase in credit risk (SICR)]
+A stage-2 migration occurs when the lifetime PD at reporting rises
+significantly above the lifetime PD expected at initial recognition.
+Common operationalisations: 30+ days past due (rebuttable
+presumption), internal rating deterioration by a defined number of
+notches, or lifetime PD more than doubling versus origination.
+\end{definition}
+
+\section{The ECL formula}
+
+For a loan with amortised-cost balance $E_t$ at the start of period $t$,
+marginal one-year default probability $m_t$ (conditional on survival to
+$t$), and loss given default $\LGD$:
+
+\begin{equation}
+  \boxed{\;
+  \ECL=\sum_{t=1}^{T} m_t\times\LGD\times E_t\times(1+\EIR)^{-t}}
+  \label{eq:ecl}
+\end{equation}
+
+Three properties are prescribed by IFRS~9.5.5.17 and deserve emphasis:
+
+\begin{enumerate}
+\item \textbf{Probability-weighted and forward-looking.} The ECL must
+      be a probability-weighted average over multiple macroeconomic
+      scenarios --- not a single ``most likely'' path, and not a worst
+      case.
+\item \textbf{Discounted at the original EIR.} The allowance is a
+      present value; a loss expected in year~3 is discounted at the
+      loan's own effective interest rate.
+\item \textbf{Marginal, not cumulative, PDs.} The $t$-th term uses the
+      probability of defaulting \emph{in} period $t$ given survival
+      until then. With survival factors
+      $s_t=\prod_{j\le t}(1-m_j)$, the year-$t$ term can equivalently
+      be written with cumulative PDs, $(S_t-S_{t-1})$, where
+      $S_t=1-s_t$.
+\end{enumerate}
+
+\begin{remark}
+The triad $m_t\times\LGD\times E_t$ is the same credit-risk arithmetic
+as the regulatory $\EL=\PD\times\LGD\times\EAD$. The frameworks differ
+in \emph{timing, horizon, aggregation, and discounting} --- not in the
+loss building blocks. This is deliberate in this book: the same
+parameters feed both models, which is exactly what the companion
+dashboards demonstrate.
+\end{remark}
+
+\section{A short proof: lifetime dominates 12-month ECL}
+
+\begin{theorem}[Monotonicity of the allowance in the horizon]
+\label{thm:lt}
+For a loan with remaining life $T\ge 2$ and non-negative marginal PDs,
+\begin{equation}
+  \text{lifetime ECL} \;\ge\; \text{12-month ECL},
+\end{equation}
+with equality iff $m_t=0$ for all $t\ge 2$ (or $T\le 1$).
+\end{theorem}
+
+\begin{proof}
+The 12-month ECL is the $t=1$ term of the sum \eqref{eq:ecl}; the
+lifetime ECL is the sum of the terms $t=1,\dots,T$. Every term is a
+product of non-negative factors, so adding terms $t\ge 2$ cannot
+decrease the total; it strictly increases it if any $m_t>0$ for
+$t\ge 2$.
+\end{proof}
+
+\begin{corollary}
+Stage migration from stage~1 to stage~2 never decreases the allowance
+of a multi-period performing loan. This is the analytical origin of
+the P\&L cliff effect.
+\end{corollary}
+
+\section{Worked example: the \EUR{10{,}000} loan}
+
+Loan terms: \EUR{10{,}000}, 3-year annuity, EIR $8.5\%$ (schedule in
+Table~\ref{tab:amortisation}). Marginal PDs (base scenario,
+conditional on survival): $m=(2.0\%,\,2.5\%,\,3.0\%)$;
+$\LGD=45\%$.
+
+\subsection{Stage 1: 12-month ECL}
+
+\begin{equation}
+  \text{loss year 1 (undiscounted)}=0.02\times0.45\times10{,}000
+  =\EUR{90.00},
+\end{equation}
+\begin{equation}
+  \ECL_{12\text{m}}=\frac{90.00}{1.085}=\EUR{82.95}.
+\end{equation}
+
+\subsection{Lifetime ECL, base scenario}
+
+\begin{table}[htbp]
+\centering
+\caption{Lifetime ECL decomposition, base scenario.}
+\label{tab:ltbase}
+\begin{tabular}{rrrrr}
+\toprule
+Year $t$ & $m_t$ & $E_t$ & $m_t\LGD E_t$ & PV at $8.5\%$\\
+\midrule
+1 & 2.0\% & 10{,}000.00 & 90.00 & 82.95\\
+2 & 2.5\% & 6{,}934.61 & 78.01 & 66.27\\
+3 & 3.0\% & 3{,}608.66 & 48.72 & 38.14\\
+\midrule
+\multicolumn{4}{r}{Lifetime ECL (base)} & 187.36\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Scenario weighting}
+
+IFRS~9.5.5.17 requires probability weighting across scenarios. We use
+three: base ($60\%$), optimistic with halved PDs ($20\%$), adverse with
+doubled PDs ($20\%$). Because every term of \eqref{eq:ecl} is linear in
+the $m_t$, each scenario's ECL scales linearly in its PD scale:
+\begin{align}
+  \ECL_{\text{opt}}&=93.68,\qquad \ECL_{\text{base}}=187.36,\qquad
+  \ECL_{\text{adv}}=374.72,\\
+  \ECL_{\text{lt}}
+  &=0.2\times93.68+0.6\times187.36+0.2\times374.72
+   =\EUR{206.10}.
+\end{align}
+The same weighting applied to the stage-1 horizon gives the
+probability-weighted 12-month ECL
+$0.2\times 41.47+0.6\times82.95+0.2\times165.90=\EUR{91.24}$
+(the companion dashboard displays these weighted figures).
+
+\begin{table}[htbp]
+\centering
+\caption{Scenario-weighted lifetime ECL under alternative weightings.}
+\label{tab:weights}
+\begin{tabular}{lrrr}
+\toprule
+Weighting (opt/base/adv) & Optimistic share & Adverse share & ECL\\
+\midrule
+20/60/20 (baseline) & 20\% & 20\% & 206.10\\
+33/34/33 & 33\% & 33\% & 218.27\\
+10/80/10 & 10\% & 10\% & 196.73\\
+50/0/50 & 50\% & 50\% & 234.20\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\keyinsight{The weighting is linear in the scenario PDs, so the
+\emph{choice of weights} matters less than the \emph{shape of the
+scenario fan}. The non-linearity of real ECL models comes from PD
+responses to macro drivers inside each scenario, not from the averaging
+step.}
+
+\subsection{Stage-2 migration: the cliff in numbers}
+
+Suppose that after one year the borrower's credit risk has
+deteriorated such that the remaining lifetime PD has roughly doubled
+(a plausible SICR trigger). The loan migrates from stage~1 to
+stage~2. For the remaining periods the allowance becomes the lifetime
+figure on the then-outstanding balance of \EUR{6{,}934.61} --- about
+\EUR{104} for years 2--3 ($66.27+38.14$, base scenario) versus
+\EUR{82.95} under a fresh 12-month view. Nothing about the contractual
+cash flows has changed; only the \emph{expected timing} of losses. A
+bank with a large book migrating simultaneously books a large
+impairment charge --- the mechanism behind the P\&L shocks of 2020.
+
+\subsection{The discounting subtlety}
+
+Because the ECL is discounted at the loan's own EIR, a \emph{higher}
+contract rate lowers the discounted allowance:
+\begin{center}
+\begin{tabular}{lcccc}
+\toprule
+EIR & 5\% & 8.5\% & 12\% & 20\%\\
+\midrule
+12-month ECL & 85.71 & 82.95 & 80.36 & 75.00\\
+\bottomrule
+\end{tabular}
+\end{center}
+All else equal, a riskier-priced loan (higher EIR) shows a slightly
+\emph{smaller} allowance for the same expected loss --- a real,
+disclosed, and sometimes counter-intuitive effect of the standard.
+
+\section{Reconciliation with Part A}
+
+\begin{itemize}
+\item Both frameworks use PD, LGD, and an exposure notion. The
+      regulatory year-1 expected loss (\EUR{90}) equals the
+      undiscounted first-period IFRS~9 loss in the base scenario ---
+      deliberately, because the same parameters feed both models.
+\item Regulation holds capital against the \emph{tail}
+      ($K\times\EAD=\EUR{463.89}$ covering the 99.9\%\ conditional
+      loss \emph{beyond} expectation); IFRS~9 books the
+      \emph{expectation} (\EUR{82.95}--\EUR{206.10}) as a provision.
+      Both coexist: an A-IRB bank books IFRS~9 ECL as a provision and
+      additionally holds IRB capital.
+\item Under CRR Arts.~158 and 160--162, the excess of IRB expected
+      losses over accounting provisions (or vice versa) enters the
+      own funds calculation. The details are bank-specific and outside
+      our scope.
+\end{itemize}
+
+\section{Limitations of Part B}
+
+\begin{itemize}
+\item Real banks run score-to-PD models with macroeconomic overlays and
+      dozens of scenarios; three scenarios are the minimum acceptable
+      teaching device.
+\item SICR assessment is partly judgemental; the ``lifetime PD doubling''
+      rule is market practice, not a standard requirement.
+\item IFRS~9 exposure is the amortised-cost carrying amount (plus, for
+      revolvers, expected drawdowns), which need not equal the
+      regulatory EAD.
+\item Stage~3 (credit-impaired) measurement --- the probability-weighted
+      shortfall of cash flows --- is not modelled here.
+\item A further subtlety: marginal PDs conditioned on survival make the
+      ECL depend on the \emph{whole} PD term structure, not just on the
+      first-year PD.
+\end{itemize}
+
+% =====================================================================
+\chapter{Part C --- Risk-Sensitive Pricing}
+\label{chap:pricing}
+% =====================================================================
+
+\section{The pricing question}
+
+Given the risk of the loan (Part~A) and its expected loss and
+provisioning (Part~B), what interest rate should the bank charge so
+that the loan earns its cost of capital? This is risk-based pricing:
+prices that reflect the borrower's risk profile --- standard practice
+in consumer and mortgage lending.
+
+\section{The RAROC framework}
+
+Risk-Adjusted Return on Capital (RAROC), developed at Bankers Trust in
+the late 1970s, allocates the loan's risk capital --- here the
+regulatory own funds requirement --- and compares the loan's
+risk-adjusted profit with the shareholders' hurdle rate (cost of
+equity, COE):
+
+\begin{equation}
+  \raroc=\frac{\text{revenue}-\text{cost of funds}
+  -\text{operating cost}-\text{expected loss}}{\text{capital}} .
+  \label{eq:rarocdef}
+\end{equation}
+
+\begin{definition}[Pricing rule]
+Accept or price the loan such that $\raroc\ge \text{COE}$. The
+\emph{break-even rate} is the customer rate $r_L$ that makes
+$\raroc=\text{COE}$ exactly.
+\end{definition}
+
+\section{Derivation of the required rate}
+
+Let $B$ be the average outstanding balance over the life of the loan,
+$r_L$ the customer rate, $r_F$ the funding rate, $O$ the amortised
+operating cost per year, $\EL_{\text{p.a.}}$ the expected loss charged
+to pricing per year, $C=0.08\times\RWA$ the allocated capital, and $h$
+the hurdle rate. Setting \eqref{eq:rarocdef} equal to $h$:
+\begin{align}
+  (r_L-r_F)\,B - O - \EL_{\text{p.a.}} &= h\,C\\
+  \Aboxed{r_L &= r_F+\frac{O+\EL_{\text{p.a.}}+h\,C}{B}}
+  \label{eq:breakeven}
+\end{align}
+
+Equation~\eqref{eq:breakeven} is the \emph{additive pricing formula}:
+customer rate $=$ funding cost $+$ operating cost $+$ expected loss
+$+$ cost of capital, each per unit of exposure. The third term
+converts Part~B into price; the fourth converts Part~A into price.
+
+\section{Worked example: pricing the \EUR{10{,}000} loan}
+
+Assumptions (illustrative, per year unless stated):
+\begin{itemize}
+\item funding rate $r_F=2.0\%$;
+\item one-time origination/servicing cost \EUR{500}, amortised over
+      3 years: $O=\EUR{166.67}$ p.a.;
+\item expected loss on the 12-month basis:
+      $\EL_{\text{p.a.}}=\PD\,\LGD\,\EAD=\EUR{90.00}$;
+\item capital $C=\EUR{463.89}$ (Part~A); hurdle rate $h=12\%$;
+\item average outstanding balance over 3 years (from
+      Table~\ref{tab:amortisation}):
+      $B=(10{,}000+6{,}934.61+3{,}608.66)/3=\EUR{6{,}847.75}$.
+\end{itemize}
+
+\begin{equation}
+  r_L = 0.02+\frac{166.67+90.00+0.12\times 463.89}{6{,}847.75}
+      = 0.02+\frac{312.34}{6{,}847.75}
+      = 6.56\% \;\text{p.a.}
+\end{equation}
+
+\begin{table}[htbp]
+\centering
+\caption{Decomposition of the $4.56\%$ risk-and-cost margin.}
+\label{tab:decomp}
+\begin{tabular}{lrl}
+\toprule
+Component & Margin share & Basis\\
+\midrule
+Operating cost & 2.43\% & $166.67/6{,}847.75$\\
+Expected loss & 1.31\% & $90.00/6{,}847.75$\\
+Cost of capital & 0.81\% & $0.12\times463.89/6{,}847.75$\\
+\midrule
+Total margin & 4.56\% & \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Cross-check: RAROC at the example EIR of 8.5\%}
+
+If the bank charges $8.5\%$ (the rate assumed for the amortisation
+schedule in Part~B), the RAROC is
+\begin{equation}
+  \raroc(8.5\%)
+  =\frac{(0.085-0.02)\times 6{,}847.75-166.67-90.00}{463.89}
+  =\frac{188.44}{463.89}=40.6\% .
+\end{equation}
+
+A $40\%$ RAROC looks implausibly high --- and this is the model's most
+important lesson: \emph{regulatory capital for a low-PD retail loan is
+small}, so a RAROC computed on regulatory capital is easily inflated.
+Professional pricing desks therefore use economic capital (a
+bank-specific tail measure, often several times the regulatory figure
+for undiversified retail books), Pillar~2 add-ons, MREL and
+leverage-ratio constraints, and acquisition costs that dwarf
+servicing costs. The break-even logic \eqref{eq:breakeven} is unchanged;
+only the size of $C$ and $O$ grows. Table~\ref{tab:capgrid} shows the
+effect of the two most important corrections.
+
+\begin{table}[htbp]
+\centering
+\caption{Break-even rate (\%) as a function of hurdle rate and capital
+multiplier ($\PD=2\%$, 12-month and lifetime EL basis).}
+\label{tab:capgrid}
+\begin{tabular}{lcccccc}
+\toprule
+& \multicolumn{3}{c}{12-month EL basis} & \multicolumn{3}{c}{lifetime EL basis}\\
+\cmidrule(lr){2-4}\cmidrule(lr){5-7}
+Capital multiplier & $h=8\%$ & $h=12\%$ & $h=16\%$
+                  & $h=8\%$ & $h=12\%$ & $h=16\%$\\
+\midrule
+1.0 (regulatory) & 6.29 & 6.56 & 6.83 & 5.98 & 6.25 & 6.52\\
+2.0              & 6.83 & 7.37 & 7.92 & 6.52 & 7.06 & 7.60\\
+4.0 (econ.\ approx.)& 7.92 & 9.00 & 10.08 & 7.60 & 8.69 & 9.77\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\keyinsight{With economic capital of four times regulatory capital and
+a $12\%$ cost of equity, the teaching model's break-even rate
+($9.00\%$) lands in the region of observed market rates for unsecured
+consumer loans --- the model closes the gap between regulatory
+arithmetic and observed prices. Use the multiplier slider in
+\texttt{Pricing\_visualised.py} to explore this.}
+
+\section{Risk sensitivity: two borrowers, same product}
+
+Take a riskier borrower with $\PD=8\%$, $\LGD=45\%$ (row of
+Table~\ref{tab:pdsens}): $R=3.79\%$, $\PD^{\text{stress}}=20.64\%$,
+$K=5.69\%$, $RW=71.1\%$, $\RWA=\EUR{7{,}108}$, own funds
+\EUR{568.64}, and an EL of $0.08\times0.45=\EUR{360}$ p.a. The
+required rate becomes
+\begin{equation}
+  r_L=0.02+\frac{166.67+360.00+0.12\times 568.64}{6{,}847.75}
+  =10.69\%\;\text{p.a.},
+\end{equation}
+against $6.56\%$ for the $2\%$ borrower. Note the composition:
+regulatory capital rises only moderately (the falling correlation
+cushions the stress PD), while the \emph{expected loss} term does most
+of the pricing work. Risk-based pricing in retail is, in this precise
+sense, mostly expected-loss pricing plus a modest capital charge.
+
+\section{Pricing with a lifetime-EL view}
+
+Part~B showed the probability-weighted lifetime ECL
+(\EUR{206.10}) is a one-off present value, while the recurring
+12-month EL charged every year (\EUR{90} p.a.\ $\times$ 3 years,
+ignoring run-off) overstates total expected losses. If management
+prices off the amortised lifetime view, the EL term becomes
+$206.10/3=\EUR{68.70}$ p.a., lowering the required rate to about
+$6.25\%$ (Table~\ref{tab:capgrid}, right panel). The choice of EL
+basis --- recurring 12-month versus amortised lifetime --- is a
+genuine, disclosed pricing-policy decision, not a technicality: the
+12-month basis is the conservative one because it charges a full-EAD
+expected loss even as the balance amortises.
+
+\section{Limitations of Part C}
+
+\begin{itemize}
+\item RAROC on regulatory capital is biased upward for low-risk
+      retail; economic capital, RARORAC, or EVA are the professional
+      fixes.
+\item The model ignores taxes, the liquidity cost of the funding base,
+      prepayment risk (consumer loans prepay), cross-selling
+      subsidies, adverse-selection feedback (raising the price worsens
+      the retained pool), and regulatory price constraints.
+\item A single hurdle rate ignores portfolio context: a new loan is
+      priced on \emph{marginal} capital, not average capital.
+\end{itemize}
+
+% =====================================================================
+\chapter{Synthesis: One Loan, Three Numbers}
+% =====================================================================
+
+\begin{table}[htbp]
+\centering
+\caption{The running example across the three frameworks (base case).}
+\begin{tabular}{lll}
+\toprule
+Question & Framework & Number\\
+\midrule
+Unexpected tail-loss capital & CRR A-IRB (Part A)
+  & \EUR{463.89} capital ($\RWA=\EUR{5{,}798.64}$)\\
+Expected-loss provision & IFRS 9 (Part B)
+  & \EUR{82.95} (stage 1) to \EUR{206.10} (stage 2, weighted lifetime)\\
+Break-even customer rate & RAROC pricing (Part C)
+  & $6.56\%$ p.a.\ (12-month EL basis)\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The three numbers are mechanically linked: the same $\PD$, $\LGD$, and
+exposure drive all three. Change the PD from $2\%$ to $8\%$ and all
+three move --- the capital requirement rises by about a quarter
+(correlation cushioning), the stage-1 allowance roughly quadruples,
+and the required rate rises by about two thirds, driven mainly by
+expected loss. This coupling is exactly what the three companion
+dashboards visualise interactively.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[node distance=8mm and 12mm,
+  box/.style={draw=ceruleanlink, rounded corners, fill=white,
+              minimum width=30mm, align=center}]
+\node[box] (pd) {$\PD=2\%$\\$\LGD=45\%$\\$\EAD=10{,}000$};
+\node[box, right=of pd] (a) {Part A\\capital \EUR{463.89}\\(99.9\%\ tail)};
+\node[box, right=of a] (b) {Part B\\allowance\\$\EUR{82.95}$--$\EUR{206.10}$};
+\node[box, below=8mm of b] (c) {Part C\\break-even $6.56\%$};
+\draw[-{Latex[length=2mm]}] (pd) -- (a);
+\draw[-{Latex[length=2mm]}] (pd) -- (b);
+\draw[-{Latex[length=2mm]}] (a.south) |- (c.west)
+  node[near start, right, font=\small] {$C$};
+\draw[-{Latex[length=2mm]}] (b) -- (c) node[midway, right, font=\small] {$\EL$};
+\end{tikzpicture}
+\caption{One parameter set drives capital, allowance, and price.}
+\end{figure}
+
+% =====================================================================
+\chapter{The Companion Dashboards}
+\label{chap:dashboards}
+% =====================================================================
+
+The three Python scripts implement the mathematics of this book as
+self-contained Flask dashboards (Python 3.12; dependencies per
+\texttt{requirements\_py312.txt}; runnable in Spyder via F5).
+
+\begin{center}
+\begin{tabular}{llp{78mm}}
+\toprule
+Script & Port & Demonstrates\\
+\midrule
+\texttt{RWA\_visualised.py} & 5001 &
+risk weight vs PD; $K$ and $R$ vs PD; RWA vs EAD;
+reproduces Tables~\ref{tab:pdsens} and \ref{tab:lgdsens}.\\
+\texttt{Impairment\_visualised.py} & 5002 &
+stage-1 vs stage-2 allowance; scenario weighting; per-year ECL
+decomposition; reproduces Tables~\ref{tab:ltbase} and \ref{tab:weights}.\\
+\texttt{Pricing\_visualised.py} & 5003 &
+break-even rate decomposition; RAROC vs candidate rate with hurdle
+line; capital multiplier; EL basis switch; reproduces
+Table~\ref{tab:capgrid}.\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Recommended study sequence: reproduce Section~\ref{sec:workedA} in
+\texttt{RWA\_visualised.py}, then vary the PD slider and compare with
+Table~\ref{tab:pdsens}; move to
+\texttt{Impairment\_visualised.py} and switch the stage selector to
+see the cliff; finish with \texttt{Pricing\_visualised.py}, first with
+the capital multiplier at 1.0, then at 4.0.
+
+% =====================================================================
+\chapter{Exercises}
+% =====================================================================
+
+\begin{enumerate}
+\item Derive the factor $12.5$ from the $8\%$\ rule without looking at
+      Chapter~\ref{chap:rwa}. Explain in one sentence why the factor
+      contains no economics.
+\item Compute $R(\PD)$ for $\PD=4\%$ by hand (two decimal places) and
+      verify with \texttt{RWA\_visualised.py}.
+\item Show algebraically that the two expressions
+      $\Phi\!\bigl[(G(\PD)+\sqrt R\,G(0.999))/\sqrt{1-R}\bigr]$ and
+      \eqref{eq:pdstress} are identical.
+\item A supervisor raises the stress confidence level from
+      $99.9\%$ to $99.99\%$. Explain qualitatively (or compute) what
+      happens to $K$ for our running example.
+\item Compute the stage-1 and stage-2 allowances of the running
+      example with $m=(3\%,3.5\%,4\%)$ and interpret the change versus
+      Table~\ref{tab:ltbase}.
+\item Prove or disprove: shifting weight from the base to the adverse
+      scenario always increases the weighted ECL.
+\item Using Table~\ref{tab:capgrid}, estimate the break-even rate for
+      capital multiplier 3.0 and $h=14\%$ (interpolate), then verify
+      with \texttt{Pricing\_visualised.py}.
+\item Explain why the RAROC of the running example at a customer rate
+      of $8.5\%$ exceeds $40\%$, and why this does not imply that
+      retail lending earns a $40\%$ return on equity in practice.
+\end{enumerate}
+
+\paragraph{Hints.} (1) Pure algebra: division by $0.08$. (3) Split the
+numerator over $\sqrt{1-R}$. (4) $G(0.9999)\approx 3.719$ instead of
+$3.090$ --- the stress PD rises further. (6) True --- by linearity in
+the adverse scenario's weight, since the adverse ECL exceeds the base
+ECL.
+
+% =====================================================================
+\appendix
+\chapter{Notation}
+\label{app:notation}
+% =====================================================================
+
+\begin{center}
+\begin{tabular}{ll}
+\toprule
+Symbol & Meaning\\
+\midrule
+$\PD$ & probability of default (one year)\\
+$\LGD$ & loss given default\\
+$\EAD$ & exposure at default\\
+$R$ & asset correlation (systematic weight squared)\\
+$Y$, $\varepsilon$ & systematic / idiosyncratic standard normal factors\\
+$\Phi$, $G=\Phi^{-1}$ & standard normal CDF / quantile function\\
+$K$ & regulatory capital factor per unit of EAD\\
+$RW$ & risk weight, $12.5\times K$\\
+$\RWA$ & risk-weighted assets\\
+$T$ & remaining life (years)\\
+$m_t$ & marginal (conditional-on-survival) one-year PD in year $t$\\
+$E_t$ & amortised-cost balance at the start of year $t$\\
+$\EIR$ & effective interest rate\\
+$\ECL$ & expected credit loss (allowance)\\
+$\EL$ & expected loss\\
+$B$ & average outstanding balance over the loan life\\
+$r_L$, $r_F$ & customer rate / funding rate\\
+$C$ & allocated (regulatory or economic) capital\\
+$h$ & hurdle rate (cost of equity)\\
+$\raroc$ & risk-adjusted return on capital\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+% =====================================================================
+\chapter{Source Notes and References}
+% =====================================================================
+
+\section*{References}
+
+\begin{enumerate}[label={[\arabic*]}]
+\item Regulation (EU) No 575/2013 (CRR), Art.~153 (risk-weight
+      functions, corporates) and Art.~154 (retail exposures,
+      correlation formula). EUR-Lex:
+      \url{https://eur-lex.europa.eu/eli/reg/2013/575/oj/eng};
+      Art.~154 text:
+      \url{https://www.legislation.gov.uk/eur/2013/575/article/154}.
+\item Basel Committee on Banking Supervision (2005), ``An Explanatory
+      Note on the Basel II IRB Risk Weight Functions'', BIS:
+      \url{https://www.bis.org/bcbs/irbriskweight.pdf}.
+\item Gordy, M.~B. (2003), ``A risk-factor model foundation for
+      ratings-based bank capital rules'', \emph{Journal of Financial
+      Intermediation} 12, 199--232.
+\item Vasicek, O. (2002), ``The Distribution of Loan Portfolio
+      Value'', \emph{Risk} 15(12), 160--162; Merton, R.~C. (1974),
+      ``On the Pricing of Corporate Debt'', \emph{Journal of Finance}
+      29, 449--470.
+\item BIS Financial Stability Institute, ``IFRS~9 and expected loss
+      provisioning --- Executive Summary'':
+      \url{https://www.bis.org/fsi/fsisummaries/ifrs9.pdf};
+      IFRS~9 \emph{Financial Instruments}, IFRS Foundation
+      (ifrs.org), paras 5.5.15--5.5.20.
+\item Risk-adjusted return on capital (RAROC):
+      \url{https://en.wikipedia.org/wiki/Risk-adjusted_return_on_capital};
+      risk-based pricing:
+      \url{https://en.wikipedia.org/wiki/Risk-based_pricing}.
+\item User-provided materials: \texttt{old\_chat.txt} (prior worked
+      derivation of the RWA example) and
+      \texttt{requirements\_py312.txt} (target Python environment).
+\end{enumerate}
+
+All web sources accessed October 2026. Credibility ratings follow in
+the Source Notes table.
+
+\section*{Source Notes}
+
+\begin{center}
+\begin{tabular}{llc}
+\toprule
+Source & Credibility & Last updated\\
+\midrule
+EUR-Lex, Regulation (EU) 575/2013 & 5/5 & 2013 (consolidated ongoing)\\
+Legislation.gov.uk, CRR Art.~154 & 5/5 & 2013 (EU-exit amendments noted)\\
+BIS, Explanatory Note on Basel II IRB Functions & 5/5 & 2005\\
+BIS FSI, IFRS 9 Executive Summary & 5/5 & 2017\\
+Wikipedia, RAROC & 3/5 & ---\\
+Wikipedia, Risk-based pricing & 3/5 & ---\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Caveats.} Article numbering and the correlation constants were
+verified against the retrieved CRR Art.~154 text; the CRR2 output-floor
+timeline and CRR3 changes were not re-verified against the current
+consolidated text and are stated qualitatively only. The IFRS~9
+paragraph references follow the IFRS Foundation numbering and the BIS
+FSI summary.
+
+\section*{Open Questions}
+
+\begin{enumerate}
+\item What is the bank's actual (supervisor-approved) PD and LGD for
+      this borrower segment? Unobservable from outside; only the bank
+      can answer.
+\item Economic capital for a concentrated retail book exceeds the
+      \EUR{463.89} regulatory figure --- by how much requires the
+      bank's internal tail model.
+\item The current CRR3 output-floor percentage applicable to the
+      bank's IRB portfolio changes effective RWA; not modelled here.
+\item The servicer's actual stage-2 migration rules (days-past-due
+      triggers, cure rules) materially affect IFRS~9 P\&L timing.
+\end{enumerate}
+
+\section*{Recommendations and Next Steps}
+
+\begin{enumerate}
+\item Run the three companion scripts and reproduce every table in
+      this book; each script prints its parameter set and results.
+\item Stress the parameters: PD up to $20\%$, LGD to $90\%$, and
+      observe the concavity of the risk weight and the near-linearity
+      of the ECL.
+\item Read the primary texts: CRR Arts.~153--154 and the BIS
+      explanatory note for Part~A; IFRS~9 paras 5.5.15--5.5.20 for
+      Part~B.
+\item Extend the pricing script to economic capital ($3$--$5\times$
+      regulatory capital for retail) and observe the break-even rate
+      converge toward observed market rates.
+\end{enumerate}
+
+\vfill
+\begin{center}
+\color{accentgrey}\small
+This textbook was created with AI assistance; all numerical examples
+were computed and cross-checked with executable code. It is an
+educational treatment with didactic simplifications, not regulatory,
+accounting, or financial advice.
+\end{center}
+
+\end{document}

@@ -1,0 +1,41 @@
+Understanding_RWA_Impairment_Pricing
+
+My goal is to create a textbook that explains and visualises the mathematical mechanisms behind:
+a) the RWA in the A-IRB approach (Gordy Formula),
+b) the impairments according to IFRS 9,
+c) risk-sensitive pricing based on a) and b).
+
+The level should be suitable for a business management mathematics graduate BSc with focus on probability, statistics and financial mathematics.
+The book should:
+1. contain short proofs or sketches of proof when a strict proof should be too long,
+2. explain everything step by step,
+3. use an example of an unsecured loan of 10000 Euro throughout the entire book,
+4. make reasonable assumptions and didactic simplifications to keep the complexity in check,
+5. explain clearly that and how it was created using AI and contain appropiate disclaimers,
+6. Propoer citation of sources,
+7. be supplemented by one python script for each parts a), b), c), that are:
+	i) fully self-contained,
+	ii) use the attached requirements file requirements_py312.txt,
+	iii) implement a flask dashboard that demonstrates the dependency of RWA, Impairment, Pricing on the risk-parameters and constants,
+	iv) appropriate complexity and maintainability,
+	v) can be run in spyder,
+	vi) contain a program header with manual how to use it,
+	vii) contain appropriate structure and comments following PEP 8.
+
+Proposal of the process you may extend:
+a) analyse old chat where you can see what I aim for (attached),
+b) research source materials,
+c) design structure of the book,
+d) write first draft,
+e) review first draft,
+f) write 3 python scripts explained above,
+g) review each python script,
+h) revise draft of book to be aligned with python scripts and create final draft,
+i) align everything,
+j) generate output.
+
+Expected output (all in english):
+A) A document written in textbook style as *.md file and as *.pdf (both having equal content).
+B) python script RWA_visualised.py,
+C) python script Impairment_visualised.py,
+D) python script Pricing_visualised.py.

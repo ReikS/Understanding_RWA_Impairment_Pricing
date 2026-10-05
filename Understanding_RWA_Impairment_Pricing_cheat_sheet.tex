@@ -1,0 +1,287 @@
+% =====================================================================
+% Cheat Sheet: Understanding RWA, Impairment, and Risk-Sensitive Pricing
+% Companion to Understanding_RWA_Impairment_Pricing.tex (same structure)
+%
+% Compile with:  pdflatex or lualatex, run twice
+% =====================================================================
+\documentclass[10pt,a4paper]{report}
+\usepackage[a4paper,margin=1.6cm]{geometry}
+\usepackage{multicol}
+\usepackage{setspace}
+
+% math BEFORE newpxmath (avoids \Bbbk / \openbox clashes)
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{mathtools}
+
+% typography matching the book
+\usepackage{tgpagella}
+\usepackage{newpxmath}
+\usepackage[T1]{fontenc}
+\usepackage{microtype}
+
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{xcolor}
+\usepackage{eurosym}
+\definecolor{ceruleanlink}{HTML}{007B8A}
+\definecolor{accentgrey}{HTML}{555555}
+\renewcommand{\EUR}[1]{\euro#1}
+
+\usepackage[colorlinks=true,linkcolor=ceruleanlink,urlcolor=ceruleanlink]{hyperref}
+\usepackage{enumitem}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{2pt}
+\setlength{\emergencystretch}{2.5em}
+\pagestyle{empty}
+\raggedcolumns
+
+% ---------- macros (as in the book) -----------------------------------
+\newcommand{\PD}{\mathrm{PD}}
+\newcommand{\LGD}{\mathrm{LGD}}
+\newcommand{\EAD}{\mathrm{EAD}}
+\newcommand{\RWA}{\mathrm{RWA}}
+\newcommand{\EL}{\mathrm{EL}}
+\newcommand{\EIR}{\mathrm{EIR}}
+\newcommand{\ECL}{\mathrm{ECL}}
+\newcommand{\raroc}{\mathrm{RAROC}}
+\newcommand{\Var}{\operatorname{Var}}
+\newcommand{\PV}{\mathrm{PV}}
+\newcommand{\sect}[1]{\vspace{1.2mm}\textcolor{ceruleanlink}{\textbf{#1}}\par\vspace{0.3mm}}
+\newcommand{\mini}[1]{\textbf{\small #1}}
+
+\begin{document}
+
+\begin{center}
+{\LARGE\bfseries RWA, Impairment, and Risk-Sensitive Pricing}\\[1mm]
+{\small Cheat sheet --- running example: unsecured consumer loan
+\EUR{10{,}000}, $\PD=2\%$, $\LGD=45\%$, 3-year annuity at $8.5\%$.}
+\end{center}
+\vspace{-2mm}
+\hrule
+\vspace{1mm}
+
+\begin{multicols}{2}
+
+% =====================================================================
+\sect{1. Foundations}
+
+Standard normal: $\varphi(z)=\frac{1}{\sqrt{2\pi}}e^{-z^{2}/2}$,\;
+$\Phi(x)=\int_{-\infty}^{x}\varphi(z)\,dz$,\; $G=\Phi^{-1}$.\\
+Memorise: $G(0.02)=-2.0537$, $G(0.999)=3.0902$.\\
+\emph{Lemma (linear combinations).} $Y,\varepsilon\sim\mathcal N(0,1)$
+indep.\ $\Rightarrow aY+b\varepsilon\sim\mathcal N(0,a^{2}+b^{2})$
+(proof: characteristic functions).\\
+\emph{Conditional.} $\mathbb P(A\mid B)=\mathbb P(A\cap B)/\mathbb P(B)$;\;
+$X=aY+b\varepsilon \mid Y=y \;\sim\; \mathcal N(ay,b^{2})$.\\
+\emph{Tail vs.\ expectation:} capital $\approx$ tail quantile of $L$
+minus $\EL=\mathbb E[L]$. EL is priced/provisioned; unexpected loss
+is capitalised.\\
+\emph{Annuity:} $\PV=N$ gives
+$A=\dfrac{N\,r}{1-(1+r)^{-n}}$;\;
+$N=10{,}000$, $r=8.5\%$, $n=3$: $A=\EUR{3{,}915.39}$;
+balances $10{,}000\to 6{,}934.61\to 3{,}608.66$.
+
+% =====================================================================
+\sect{2. Part A --- RWA under A-IRB (CRR)}
+
+\mini{Chain:} $\PD,\LGD,\EAD \to K \to \RWA=12.5\,K\,\EAD \to$
+own funds $=8\%\times\RWA$.\\
+\emph{Thm (scaling).} own funds $=K\EAD=0.08\,\RWA$
+$\Rightarrow \RWA=K\EAD/0.08$; the $12.5$ is pure algebra.\\
+\mini{ASRF factor model:}
+\[
+X_i=\sqrt{R}\,Y+\sqrt{1-R}\,\varepsilon_i,\qquad
+\Var(X_i)=1,\quad \operatorname{Cov}(X_i,X_j)=R .
+\]
+\mini{Default threshold (Merton):} $\PD=\mathbb P(X_i<c)=\Phi(c)$, so
+$c=G(\PD)$.\\
+\mini{Conditional PD:}
+\[
+\mathbb P(\text{def}\mid Y=y)
+=\Phi\!\Bigl(\tfrac{G(\PD)-\sqrt R\,y}{\sqrt{1-R}}\Bigr).
+\]
+\mini{Stress PD} (adverse state $y=G(0.999)$):
+\[
+\boxed{\;\PD^{\mathrm{stress}}
+=\Phi\!\Bigl[\tfrac{G(\PD)}{\sqrt{1-R}}
++\sqrt{\tfrac{R}{1-R}}\,G(0.999)\Bigr]}
+\]
+\mini{Gordy formula (capital factor):}
+\[
+\boxed{\;K=\LGD\bigl(\PD^{\mathrm{stress}}-\PD\bigr)
+=\LGD\Bigl[\Phi\bigl(\cdots\bigr)-\PD\Bigr]}
+\]
+Capital $=$ LGD $\times$ excess of stress PD over PD
+($\EL=\PD\LGD$ subtracted; stress loss covers the 99.9\%\ tail).\\
+\emph{Gordy's thm (sketch).} Conditional on $Y$, defaults are
+independent; $n\to\infty$ makes the default rate converge to
+$\PD^{\mathrm{stress}}(Y)$ a.s.\ $\Rightarrow$ capital depends only on
+$(\PD,\LGD,R)$, not portfolio composition (portfolio invariance).\\
+\mini{CRR retail correlation (Art.~154):}
+\[
+A(\PD)=\frac{1-e^{-35\PD}}{1-e^{-35}},\qquad
+\boxed{\;R(\PD)=0.16-0.13\,A(\PD)}
+\]
+anchors $R\to16\%$ ($\PD\to0$), $R\to3\%$ ($\PD\to1$);
+constants $R=0.15$ (mortgages), $R=0.04$ (revolving retail).\\
+\mini{Running example:}
+$A=0.5034$, $R=9.46\%$;\;
+$z=-2.1561+1.0000=-1.1597$;\;
+$\PD^{\mathrm{stress}}=12.31\%$;\;
+$K=0.45\times0.1031=4.64\%$;\;
+$RW=58.0\%$;\;
+$\RWA=\EUR{5{,}798.64}$;\;
+own funds $=\EUR{463.89}$;\;
+$\EL=\EUR{90.00}$.\\
+\mini{Sensitivities:} $K$ concave in $\PD$ (falling $R$ cushions);
+RWA linear in $\EAD$, $\LGD$. Example: $\PD=8\%$ $\Rightarrow$
+$R=3.79\%$, $\PD^{\mathrm{stress}}=20.64\%$, $K=5.69\%$,
+$RW=71.1\%$, own funds \EUR{568.64}, $\EL=\EUR{360}$.
+
+% =====================================================================
+\sect{3. Part B --- Impairment under IFRS 9}
+
+\mini{Stages:}
+\begin{center}\small
+\begin{tabular}{@{}lll@{}}
+\toprule
+1 & performing & 12m ECL; interest gross\\
+2 & SICR & lifetime ECL; interest gross\\
+3 & credit-impaired & lifetime ECL; interest net\\
+\bottomrule
+\end{tabular}
+\end{center}
+\mini{ECL formula} (marginal PDs, discount at original EIR):
+\[
+\boxed{\;\ECL=\sum_{t=1}^{T} m_t\,\LGD\,E_t\,(1+\EIR)^{-t}}
+\]
+$m_t$ $=$ conditional-on-survival one-year PD; equivalently
+$(S_t-S_{t-1})$ with $S_t=1-\prod_{j\le t}(1-m_j)$.\\
+\emph{Thm (monotonicity).} lifetime ECL $\ge$ 12m ECL, strict if any
+$m_t>0$, $t\ge2$ $\Rightarrow$ stage-2 migration is a P\&L cliff
+(allowance never decreases on migration).\\
+\mini{Running example:} $m=(2\%,2.5\%,3\%)$, $E=(10{,}000;\,
+6{,}934.61;\,3{,}608.66)$:
+\[
+\text{12m: } \tfrac{0.02\cdot0.45\cdot10{,}000}{1.085}
+=\EUR{82.95};\quad
+\text{lifetime: } 82.95+66.27+38.14=\EUR{187.36}
+\]
+\mini{Scenario weighting} (weights $20/60/20$, PDs halved/base/doubled;
+ECL linear in $m$):
+\[
+\ECL_{\mathrm{lt}}=0.2(93.68)+0.6(187.36)+0.2(374.72)
+=\EUR{206.10}
+\]
+weighted 12m: $\EUR{91.24}$.\\
+\mini{EIR subtlety:} higher EIR $\Rightarrow$ lower discounted
+allowance ($12$m ECL: $85.71/82.95/80.36/75.00$ at
+$5/8.5/12/20\%$).\\
+\mini{Reconciliation:} regulatory EL $=$ undiscounted year-1 ECL term
+($\EUR{90}$); capital covers the tail (\EUR{463.89}), IFRS~9 books
+the expectation (\EUR{82.95}--\EUR{206.10}).
+
+% =====================================================================
+\sect{4. Part C --- Risk-Sensitive Pricing (RAROC)}
+
+\[
+\raroc=\frac{\text{revenue}-\text{funding cost}-\text{opex}-\EL}
+{\text{capital}}
+\]
+Pricing rule: $\raroc\ge$ COE; break-even rate $r_L$ where
+$\raroc=$ COE $=h$. Solving:
+\[
+\boxed{\;r_L=r_F+\frac{O+\EL_{\text{p.a.}}+h\,C}{B}\;}
+\qquad C=0.08\,\RWA
+\]
+$f=$ funding $+$ opex $+$ EL $+$ cost of capital (Parts B and A in
+price).\\
+\mini{Running example:} $r_F=2\%$, $O=\EUR{166.67}$,
+$\EL=\EUR{90}$, $C=\EUR{463.89}$, $h=12\%$,
+$B=\EUR{6{,}847.75}$:
+\[
+r_L=0.02+\frac{166.67+90+55.67}{6{,}847.75}=6.56\%
+\]
+margin $4.56\%$: opex $2.43\%$ $+$ EL $1.31\%$ $+$ capital $0.81\%$.\\
+\mini{Cross-check:}
+$\raroc(8.5\%)=\frac{188.44}{463.89}=40.6\%$ ---
+inflated because regulatory capital for low-PD retail is small;
+professional fixes: economic capital ($3$--$5\times$), Pillar~2,
+acquisition costs.\\
+\mini{Riskier borrower ($\PD=8\%$):}
+$r_L=0.02+\frac{166.67+360+68.24}{6{,}847.75}=10.69\%$ ---
+EL does most of the pricing work.\\
+\mini{Lifetime-EL basis:} $\EL=206.10/3=\EUR{68.70}$ p.a.
+$\Rightarrow r_L\approx6.25\%$ (12m basis is the conservative one).
+
+% =====================================================================
+\sect{5. Synthesis: one loan, three numbers}
+
+\begin{center}\small
+\begin{tabular}{@{}lll@{}}
+\toprule
+Tail capital & A-IRB & \EUR{463.89} ($\RWA$ \EUR{5{,}798.64})\\
+Provision & IFRS 9 & \EUR{82.95}--\EUR{206.10}\\
+Break-even & RAROC & $6.56\%$ p.a.\\
+\bottomrule
+\end{tabular}
+\end{center}
+Same $(\PD,\LGD,\EAD)$ drive all three; capital rises modestly with
+risk (correlation cushion), allowance and price rise roughly with EL.
+
+% =====================================================================
+\sect{6. Dashboards}
+
+\texttt{RWA\_visualised.py} (5001): $RW$, $K$, $R$ vs PD; RWA vs EAD.\\
+\texttt{Impairment\_visualised.py} (5002): stage cliff, scenario
+weights, per-year ECL.\\
+\texttt{Pricing\_visualised.py} (5003): break-even decomposition,
+RAROC vs hurdle, capital multiplier, EL basis.
+
+% =====================================================================
+\sect{Key tables (compressed)}
+
+\mini{Break-even rate (\%), hurdle $h$ $\times$ capital multiplier:}
+\begin{center}\small
+\begin{tabular}{@{}lcccccc@{}}
+\toprule
+& \multicolumn{3}{c}{12m EL} & \multicolumn{3}{c}{lifetime EL}\\
+\cmidrule(lr){2-4}\cmidrule(lr){5-7}
+Mult. & 8\% & 12\% & 16\% & 8\% & 12\% & 16\%\\
+\midrule
+1.0 & 6.29 & 6.56 & 6.83 & 5.98 & 6.25 & 6.52\\
+2.0 & 6.83 & 7.37 & 7.92 & 6.52 & 7.06 & 7.60\\
+4.0 & 7.92 & 9.00 & 10.08 & 7.60 & 8.69 & 9.77\\
+\bottomrule
+\end{tabular}
+\end{center}
+\mini{PD sensitivity (LGD $45\%$, EAD \EUR{10{,}000}):}
+\begin{center}\scriptsize
+\begin{tabular}{@{}rrrrrrr@{}}
+\toprule
+$\PD$ & $R$ & $\PD^{\mathrm{stress}}$ & $K$ & $RW$ & RWA & req.\ rate\\
+\midrule
+0.5\% & 13.9\% & 6.25\% & 2.59\% & 32.4\% & 3{,}236 & 5.22\%\\
+1\% & 12.2\% & 9.14\% & 3.66\% & 45.8\% & 4{,}577 & 5.73\%\\
+2\% & 9.5\% & 12.31\% & 4.64\% & 58.0\% & 5{,}799 & 6.56\%\\
+5\% & 5.3\% & 16.81\% & 5.31\% & 66.4\% & 6{,}642 & 8.65\%\\
+8\% & 3.8\% & 20.64\% & 5.69\% & 71.1\% & 7{,}108 & 10.69\%\\
+15\% & 3.1\% & 30.75\% & 7.09\% & 88.6\% & 8{,}860 & 15.53\%\\
+30\% & 3.0\% & 50.44\% & 9.20\% & 115\% & 11{,}498 & 25.76\%\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\vfill
+\begin{center}\scriptsize\color{accentgrey}
+Educational summary with didactic simplifications --- not regulatory,
+accounting, or financial advice. Full derivations, proofs, and
+sources: \emph{Understanding RWA, Impairment, and Risk-Sensitive
+Pricing}.
+\end{center}
+
+\end{multicols}
+\end{document}

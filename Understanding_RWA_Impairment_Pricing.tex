@@ -18,17 +18,17 @@
 % ---------- geometry -------------------------------------------------
 \usepackage[a4paper,margin=2.5cm,headheight=14pt]{geometry}
 
+% ---------- math (must load BEFORE newpxmath: avoids \Bbbk / \openbox clashes) ---
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{mathtools}
+
 % ---------- typography (matching the author's TeX setup) --------------
 \usepackage{tgpagella}          % Palatino-like text font (as used by moderncv)
 \usepackage{newpxmath}          % matching math font
 \usepackage[T1]{fontenc}
 \usepackage{microtype}
-
-% ---------- math ------------------------------------------------------
-\usepackage{amsmath}
-\usepackage{amssymb}
-\usepackage{amsthm}
-\usepackage{mathtools}
 
 % ---------- tables, figures ------------------------------------------
 \usepackage{booktabs}
@@ -41,7 +41,8 @@
 \usepackage{eurosym}
 \definecolor{ceruleanlink}{HTML}{007B8A}
 \definecolor{accentgrey}{HTML}{555555}
-\newcommand{\EUR}[1]{\euro#1}
+% eurosym already defines \EUR; redefine it as our amount macro
+\renewcommand{\EUR}[1]{\euro#1}
 
 % ---------- links ----------------------------------------------------
 \usepackage[colorlinks=true,linkcolor=ceruleanlink,citecolor=ceruleanlink,urlcolor=ceruleanlink]{hyperref}
@@ -51,10 +52,11 @@
 \usepackage{fancyhdr}
 \pagestyle{fancy}
 \fancyhf{}
-\fancyhead[LE]{\small\itshape Understanding RWA, Impairment, and Pricing}
+\fancyhead[L]{\small\itshape Understanding RWA, Impairment, and Pricing}
 \fancyhead[RO]{\small\itshape\nouppercase{\leftmark}}
 \fancyfoot[C]{\thepage}
 \renewcommand{\headrulewidth}{0.4pt}
+\setlength{\emergencystretch}{2.5em} % fixes most overfull hboxes
 
 % ---------- theorem environments ---------------------------------------
 \theoremstyle{definition}
@@ -67,6 +69,8 @@
 \newtheorem{corollary}[definition]{Corollary}
 
 % ---------- convenience macros ------------------------------------------
+\newcommand{\Var}{\operatorname{Var}}
+\newcommand{\PV}{\mathrm{PV}}
 \newcommand{\PD}{\mathrm{PD}}
 \newcommand{\LGD}{\mathrm{LGD}}
 \newcommand{\EAD}{\mathrm{EAD}}
@@ -586,7 +590,7 @@ constants: $R=0.15$ for exposures secured by immovable property, and
 $R=0.04$ for qualifying revolving retail exposures. Our unsecured
 instalment loan uses the general function \eqref{eq:corr}.
 
-\section{Worked example: the \EUR{10{,}000} loan, step by step}
+\section{Worked example: the \texorpdfstring{\EUR{10{,}000}}{10000} loan, step by step}
 \label{sec:workedA}
 
 Assumptions (illustrative): $\EAD=\EUR{10{,}000}$, $\PD=2\%$,
@@ -835,7 +839,7 @@ of a multi-period performing loan. This is the analytical origin of
 the P\&L cliff effect.
 \end{corollary}
 
-\section{Worked example: the \EUR{10{,}000} loan}
+\section{Worked example: the \texorpdfstring{\EUR{10{,}000}}{10000} loan}
 
 Loan terms: \EUR{10{,}000}, 3-year annuity, EIR $8.5\%$ (schedule in
 Table~\ref{tab:amortisation}). Marginal PDs (base scenario,
@@ -1029,7 +1033,7 @@ customer rate $=$ funding cost $+$ operating cost $+$ expected loss
 $+$ cost of capital, each per unit of exposure. The third term
 converts Part~B into price; the fourth converts Part~A into price.
 
-\section{Worked example: pricing the \EUR{10{,}000} loan}
+\section{Worked example: pricing the \texorpdfstring{\EUR{10{,}000}}{10000} loan}
 
 Assumptions (illustrative, per year unless stated):
 \begin{itemize}
@@ -1190,6 +1194,7 @@ dashboards visualise interactively.
 
 \begin{figure}[htbp]
 \centering
+\resizebox{\linewidth}{!}{%
 \begin{tikzpicture}[node distance=8mm and 12mm,
   box/.style={draw=ceruleanlink, rounded corners, fill=white,
               minimum width=30mm, align=center}]
@@ -1202,7 +1207,7 @@ dashboards visualise interactively.
 \draw[-{Latex[length=2mm]}] (a.south) |- (c.west)
   node[near start, right, font=\small] {$C$};
 \draw[-{Latex[length=2mm]}] (b) -- (c) node[midway, right, font=\small] {$\EL$};
-\end{tikzpicture}
+\end{tikzpicture}}
 \caption{One parameter set drives capital, allowance, and price.}
 \end{figure}
 
